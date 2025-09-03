@@ -2,7 +2,8 @@ import {
   MarketData,
   PriceData,
   ApiResponse,
-  HyperliquidMetaResponse
+  HyperliquidMetaResponse,
+  CandleData
 } from "@/types/trading";
 
 const API_BASE_URL = "https://api.hyperliquid.xyz/info";
@@ -60,4 +61,13 @@ export function formatPrice(
 ): string {
   const num = typeof price === "string" ? parseFloat(price) : price;
   return num.toFixed(decimals);
+}
+
+export async function getPriceHistory(
+  coin: string,
+  interval: string = "1h",
+  startTime: number
+): Promise<ApiResponse<CandleData>> {
+  const req = { coin, interval, startTime };
+  return makeRequest<CandleData>({ type: "candleSnapshot", req });
 }
