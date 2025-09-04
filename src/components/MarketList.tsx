@@ -2,8 +2,8 @@
 
 import { useState, useTransition, useMemo } from "react";
 import { useMarketData, usePriceData } from "@/hooks/useMarket";
-import { useDebounce } from "@/hooks/useDebounce";
 import { formatPrice } from "@/lib/api";
+import { useDebounce } from "@/hooks/useDebounce";
 import Link from "next/link";
 
 function MarketListSkeleton() {
@@ -45,7 +45,7 @@ function MarketItem({
 
   return (
     <Link href={`/markets/${name}`} className="block">
-      <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow cursor-pointer hover:border-blue-300 dark:hover:border-blue-600">
+      <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer hover:border-blue-300 dark:hover:border-blue-600">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
             {name.charAt(0)}
@@ -56,7 +56,7 @@ function MarketItem({
         </div>
         <div className="text-right">
           <div
-            className={`font-mono text-lg font-semibold ${
+            className={`font-mono text-lg font-semibold transition-colors duration-200 ${
               isPositive
                 ? "text-green-600 dark:text-green-400"
                 : "text-red-600 dark:text-red-400"
@@ -193,11 +193,12 @@ export function MarketList() {
         <h2 className="text-xl font-bold text-gray-900 dark:text-white">
           Markets
         </h2>
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          Real-time prices
-        </div>
       </div>
+      <p className="text-gray-600 dark:text-gray-400 mt-1">
+        Choose a market to trade
+      </p>
 
+      {/* Search Bar */}
       <SearchBar
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}

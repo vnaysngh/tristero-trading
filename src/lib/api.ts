@@ -1,9 +1,10 @@
 import {
   MarketData,
   PriceData,
+  CandleData,
   ApiResponse,
   HyperliquidMetaResponse,
-  CandleData
+  PortfolioData
 } from "@/types/trading";
 
 const API_BASE_URL = "https://api.hyperliquid.xyz/info";
@@ -55,6 +56,15 @@ export async function getMarketData(): Promise<ApiResponse<MarketData[]>> {
   };
 }
 
+export async function getPriceHistory(
+  coin: string,
+  interval: string = "1h",
+  startTime: number
+): Promise<ApiResponse<CandleData>> {
+  const req = { coin, interval, startTime };
+  return makeRequest<CandleData>({ type: "candleSnapshot", req });
+}
+
 export function formatPrice(
   price: string | number,
   decimals: number = 2
@@ -63,11 +73,51 @@ export function formatPrice(
   return num.toFixed(decimals);
 }
 
-export async function getPriceHistory(
-  coin: string,
-  interval: string = "1h",
-  startTime: number
-): Promise<ApiResponse<CandleData>> {
-  const req = { coin, interval, startTime };
-  return makeRequest<CandleData>({ type: "candleSnapshot", req });
+export function calculatePnL(
+  entryPrice: number,
+  currentPrice: number,
+  size: number,
+  side: "long" | "short"
+): { pnl: number; pnlPercentage: number } {
+  const priceDiff =
+    side === "long" ? currentPrice - entryPrice : entryPrice - currentPrice;
+
+  const pnl = priceDiff * size;
+  const pnlPercentage = (pnl / (entryPrice * size)) * 100;
+
+  return { pnl, pnlPercentage };
+}
+
+export async function getPortfolioData(): Promise<ApiResponse<PortfolioData>> {
+  const body = {
+    type: "portfolio",
+    user: "0x32664952e3CE32189b193a4E4A918b460b271D61" // Hardcoded address as requested
+  };
+
+  try {
+    const response = await fetch(API_BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body),
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error) {
+    console.error("Portfolio API request failed:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch portfolio data"
+    };
+  }
 }

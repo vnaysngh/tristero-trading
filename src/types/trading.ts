@@ -68,13 +68,10 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
-// Portfolio types
 export interface PortfolioHistory {
   accountValueHistory: [number, string][];
   pnlHistory: [number, string][];
   vlm: string;
 }
 
-export interface PortfolioData {
-  [key: string]: PortfolioHistory;
-}
+export type PortfolioData = [string, PortfolioHistory][];
