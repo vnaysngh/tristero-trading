@@ -33,22 +33,13 @@ function CandlestickChart({ data }: { data: CandleData }) {
     );
   }
 
-  const bars = data.slice(-50);
+  const bars = data.slice(-50); // Show last 50 candles
   const maxPrice = Math.max(...bars.map((bar) => parseFloat(bar.h)));
   const minPrice = Math.min(...bars.map((bar) => parseFloat(bar.l)));
   const priceRange = maxPrice - minPrice;
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          {bars[0]?.s} Price Chart
-        </h3>
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          {bars[0]?.i} intervals
-        </div>
-      </div>
-
       <div className="relative h-64 bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
         <svg
           width="100%"
@@ -120,37 +111,11 @@ function CandlestickChart({ data }: { data: CandleData }) {
           ${formatPrice(minPrice)}
         </div>
       </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-        <div>
-          <div className="text-gray-500 dark:text-gray-400">Latest Price</div>
-          <div className="font-mono font-semibold text-gray-900 dark:text-white">
-            ${formatPrice(parseFloat(bars[bars.length - 1].c))}
-          </div>
-        </div>
-        <div>
-          <div className="text-gray-500 dark:text-gray-400">24h High</div>
-          <div className="font-mono font-semibold text-green-600 dark:text-green-400">
-            ${formatPrice(maxPrice)}
-          </div>
-        </div>
-        <div>
-          <div className="text-gray-500 dark:text-gray-400">24h Low</div>
-          <div className="font-mono font-semibold text-red-600 dark:text-red-400">
-            ${formatPrice(minPrice)}
-          </div>
-        </div>
-        <div>
-          <div className="text-gray-500 dark:text-gray-400">Candles</div>
-          <div className="font-mono font-semibold text-gray-900 dark:text-white">
-            {bars.length}
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
 
+// Main chart component
 export function PriceChart({ coin, interval = "1h" }: PriceChartProps) {
   const [chartData, setChartData] = useState<CandleData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -167,7 +132,7 @@ export function PriceChart({ coin, interval = "1h" }: PriceChartProps) {
       setError(null);
 
       try {
-        const startTime = Date.now() - 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+        const startTime = Date.now() - 24 * 60 * 60 * 1000;
         const response = await getPriceHistory(coin, interval, startTime);
         if (response.success && response.data) {
           setChartData(response.data);

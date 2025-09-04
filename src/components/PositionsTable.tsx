@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usePortfolioData, usePriceData } from "@/hooks/useMarket";
+import { usePriceData } from "@/hooks/useMarket";
 import { formatPrice } from "@/lib/api";
+import { tradingService } from "@/lib/trading-service";
 
 interface Position {
   coin: string;
+  originalCoin: string;
   size: string;
   positionValue: string;
   entryPrice: string;
@@ -16,64 +18,19 @@ interface Position {
   margin: string;
 }
 
-function generatePositionFromPortfolio(
-  portfolio: any,
-  currentMarkPrice: string
-): Position[] {
-  if (!portfolio || !Array.isArray(portfolio)) {
-    return [];
-  }
-
-  // Find the "day" data from the array structure
-  const dayData = portfolio.find((item: any) => item[0] === "day");
-
-  if (!dayData || !dayData[1]) {
-    return [];
-  }
-
-  const dayPortfolio = dayData[1];
-  const latestAccountValue =
-    dayPortfolio.accountValueHistory[
-      dayPortfolio.accountValueHistory.length - 1
-    ];
-  const latestPnL = dayPortfolio.pnlHistory[dayPortfolio.pnlHistory.length - 1];
-
-  if (!latestAccountValue || !latestPnL) return [];
-
-  const accountValue = parseFloat(latestAccountValue[1]);
-  const pnl = parseFloat(latestPnL[1]);
-  const pnlPercentage =
-    accountValue > 0 ? (pnl / (accountValue - pnl)) * 100 : 0;
-
-  const leverage = 3;
-  const positionValue = accountValue * leverage;
-  const margin = accountValue;
-
-  const position: Position = {
-    coin: "ETH 3x",
-    size: "0.0067 ETH",
-    positionValue: `$${formatPrice(positionValue.toString())}`,
-    entryPrice: "4,459.1",
-    markPrice: currentMarkPrice,
-    pnl:
-      pnl >= 0
-        ? `+$${formatPrice(pnl.toString())}`
-        : `-$${formatPrice(Math.abs(pnl).toString())}`,
-    roe:
-      pnlPercentage >= 0
-        ? `+${formatPrice(pnlPercentage.toString())}%`
-        : `${formatPrice(pnlPercentage.toString())}%`,
-    liqPrice: "3,035.4",
-    margin: `$${formatPrice(margin.toString())} (Isolated)`
-  };
-
-  return [position];
-}
-
 export function PositionsTable() {
-  const { portfolio, loading, error } = usePortfolioData();
   const { prices } = usePriceData();
   const [markPrice, setMarkPrice] = useState("4,460.2");
+  const [closingPositions, setClosingPositions] = useState<Set<string>>(
+    new Set()
+  );
+  const [closeError, setCloseError] = useState<string | null>(null);
+  const [closeSuccess, setCloseSuccess] = useState<string | null>(null);
+  const [realPositions, setRealPositions] = useState<any[]>([]);
+  const [loadingPositions, setLoadingPositions] = useState(false);
+  const [isTradingServiceInitialized, setIsTradingServiceInitialized] =
+    useState(false);
+  const [priceUpdateTrigger, setPriceUpdateTrigger] = useState(0);
 
   useEffect(() => {
     if (prices && prices.ETH) {
@@ -81,22 +38,170 @@ export function PositionsTable() {
     }
   }, [prices]);
 
-  const positions = generatePositionFromPortfolio(portfolio, markPrice);
+  useEffect(() => {
+    if (realPositions.length > 0 && prices) {
+      setPriceUpdateTrigger((prev) => prev + 1);
+    }
+  }, [prices, realPositions]);
 
-  if (loading) {
+  const fetchRealPositions = async () => {
+    setLoadingPositions(true);
+    try {
+      const result = await tradingService.getClearinghouseState(
+        "0x32664952e3CE32189b193a4E4A918b460b271D61"
+      );
+      if (result.success && result.data?.assetPositions) {
+        // Filter out positions with zero size
+        const activePositions = result.data.assetPositions.filter(
+          (pos: any) => parseFloat(pos.position.szi || "0") !== 0
+        );
+        setRealPositions(activePositions);
+      }
+    } catch (err) {
+      console.error("Error fetching real positions:", err);
+    } finally {
+      setLoadingPositions(false);
+    }
+  };
+
+  const initializeTradingService = async () => {
+    try {
+      const config = {
+        privateKey: process.env.NEXT_PUBLIC_PRIVATE_KEY || "",
+        userAddress: "0x32664952e3CE32189b193a4E4A918b460b271D61",
+        testnet: false,
+        vaultAddress: undefined as string | undefined
+      };
+
+      if (!config.privateKey) {
+        setCloseError(
+          "Please configure your private key in environment variables"
+        );
+        return false;
+      }
+
+      await tradingService.initialize(config);
+      setIsTradingServiceInitialized(true);
+      setCloseError(null);
+      return true;
+    } catch (err) {
+      setCloseError(
+        err instanceof Error
+          ? err.message
+          : "Failed to initialize trading service"
+      );
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    fetchRealPositions();
+  }, []);
+
+  const handleClosePosition = async (coin: string) => {
+    setCloseError(null);
+    setCloseSuccess(null);
+    setClosingPositions((prev) => new Set(prev).add(coin));
+
+    try {
+      if (!isTradingServiceInitialized) {
+        const initialized = await initializeTradingService();
+        if (!initialized) {
+          return;
+        }
+      }
+
+      const result = await tradingService.closePosition(coin);
+
+      if (result.success) {
+        setCloseSuccess(`Position ${coin} closed successfully!`);
+        await fetchRealPositions();
+      } else {
+        setCloseError(result.error || `Failed to close position ${coin}`);
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message.includes("not initialized")) {
+        setCloseError(
+          "Trading service not initialized. Please configure your private key in environment variables."
+        );
+      } else {
+        setCloseError(
+          err instanceof Error ? err.message : "An unexpected error occurred"
+        );
+      }
+    } finally {
+      setClosingPositions((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(coin);
+        return newSet;
+      });
+    }
+  };
+
+  const generateRealPositions = (): Position[] => {
+    if (loadingPositions || !realPositions.length) return [];
+
+    const _ = priceUpdateTrigger;
+
+    return realPositions.map((pos: any) => {
+      const coin = pos.position.coin;
+      const size = parseFloat(pos.position.szi || "0");
+      const entryPx = parseFloat(pos.position.entryPx || "0");
+      const currentPrice = parseFloat(
+        prices[coin]?.toString() || markPrice.replace(/,/g, "")
+      );
+
+      const leverage = pos.position.leverage?.value || 1;
+      const marginUsed = parseFloat(pos.position.marginUsed || "0");
+      const unrealizedPnl = parseFloat(pos.position.unrealizedPnl || "0");
+      const positionValue = parseFloat(pos.position.positionValue || "0");
+      const returnOnEquity = parseFloat(pos.position.returnOnEquity || "0");
+      const liquidationPx = parseFloat(pos.position.liquidationPx || "0");
+
+      const priceDifference =
+        size >= 0 ? currentPrice - entryPx : entryPx - currentPrice;
+      const pnl = Math.abs(size) * priceDifference;
+      const roe = marginUsed > 0 ? (pnl / marginUsed) * 100 : 0; // ROE = PnL / margin_used * 100
+
+      return {
+        coin: `${coin} ${leverage}x`,
+        originalCoin: `${coin}-PERP`,
+        size: `${Math.abs(size).toFixed(4)} ${coin}`,
+        positionValue: `$${formatPrice(positionValue.toString())}`,
+        entryPrice: formatPrice(entryPx.toString()),
+        markPrice: formatPrice(currentPrice.toString()),
+        pnl:
+          pnl >= 0
+            ? `+$${formatPrice(pnl.toString())}`
+            : `-$${formatPrice(Math.abs(pnl).toString())}`,
+        roe:
+          roe >= 0
+            ? `+${formatPrice(roe.toString())}%`
+            : `${formatPrice(roe.toString())}%`,
+        liqPrice:
+          liquidationPx > 0 ? formatPrice(liquidationPx.toString()) : "N/A",
+        margin: `$${formatPrice(marginUsed.toString())} (Isolated)`
+      };
+    });
+  };
+
+  const positions = generateRealPositions();
+  const isLoading = loadingPositions;
+
+  if (isLoading) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div className="p-8 text-center">
           <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
           <p className="text-gray-500 dark:text-gray-400">
-            Loading portfolio data...
+            Loading positions...
           </p>
         </div>
       </div>
     );
   }
 
-  if (error) {
+  /*  if (error) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div className="p-8 text-center">
@@ -122,10 +227,36 @@ export function PositionsTable() {
         </div>
       </div>
     );
-  }
+  } */
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      {closeError && (
+        <div className="bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-6 py-3">
+          {closeError}
+        </div>
+      )}
+      {closeSuccess && (
+        <div className="bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-6 py-3">
+          {closeSuccess}
+        </div>
+      )}
+
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Open Positions
+        </h2>
+        <div className="flex space-x-2">
+          <button
+            onClick={fetchRealPositions}
+            disabled={isLoading}
+            className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? "Refreshing..." : "↻ Refresh"}
+          </button>
+        </div>
+      </div>
+
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
@@ -139,19 +270,6 @@ export function PositionsTable() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 <div className="flex items-center space-x-1">
                   <span>Position Value</span>
-                  <svg
-                    className="w-3 h-3 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
                 </div>
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -243,19 +361,6 @@ export function PositionsTable() {
                           {position.pnl} ({position.roe})
                         </div>
                       </div>
-                      <svg
-                        className="w-4 h-4 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                        />
-                      </svg>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
@@ -266,25 +371,24 @@ export function PositionsTable() {
                       <span className="text-sm text-gray-900 dark:text-white">
                         {position.margin}
                       </span>
-                      <svg
-                        className="w-4 h-4 text-gray-400 cursor-pointer hover:text-gray-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                        />
-                      </svg>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex space-x-2">
-                      <button className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm font-medium transition-colors">
-                        Market
+                      <button
+                        onClick={() =>
+                          handleClosePosition(position.originalCoin)
+                        }
+                        disabled={closingPositions.has(position.coin)}
+                        className={`text-sm font-medium transition-colors cursor-pointer ${
+                          closingPositions.has(position.coin)
+                            ? "text-gray-400 cursor-not-allowed"
+                            : "text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
+                        }`}
+                      >
+                        {closingPositions.has(position.coin)
+                          ? "Closing..."
+                          : "Market"}
                       </button>
                     </div>
                   </td>

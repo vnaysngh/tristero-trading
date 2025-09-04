@@ -44,7 +44,6 @@ export async function getMarketData(): Promise<ApiResponse<MarketData[]>> {
     type: "meta"
   });
   if (response.success && response.data) {
-    // Filter out delisted markets and return only active ones
     const activeMarkets = response.data.universe.filter(
       (market) => !market.isDelisted
     );
@@ -91,7 +90,7 @@ export function calculatePnL(
 export async function getPortfolioData(): Promise<ApiResponse<PortfolioData>> {
   const body = {
     type: "portfolio",
-    user: "0x32664952e3CE32189b193a4E4A918b460b271D61" // Hardcoded address as requested
+    user: "0x32664952e3CE32189b193a4E4A918b460b271D61"
   };
 
   try {

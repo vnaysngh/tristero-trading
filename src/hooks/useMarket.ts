@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { getMarketData, getAllPrices, getPortfolioData } from "@/lib/api";
-import { MarketData, PortfolioData, PriceData } from "@/types/trading";
+import { MarketData, PriceData, PortfolioData } from "@/types/trading";
 
 const dataCache = {
   markets: null as MarketData[] | null,
@@ -15,7 +15,7 @@ const dataCache = {
 
 const CACHE_DURATION = {
   markets: 30000,
-  prices: 5000,
+  prices: 3000,
   portfolio: 10000
 };
 
@@ -41,7 +41,6 @@ export function useMarketData() {
       setError(null);
 
       const response = await getMarketData();
-      console.log(response, "response");
       if (response.success && response.data) {
         dataCache.markets = response.data;
         dataCache.lastMarketFetch = now;
@@ -69,6 +68,7 @@ export function usePriceData() {
   const [prices, setPrices] = useState<PriceData>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const fetchPrices = useCallback(async () => {
     const now = Date.now();
@@ -78,12 +78,17 @@ export function usePriceData() {
       now - dataCache.lastPriceFetch < CACHE_DURATION.prices
     ) {
       setPrices(dataCache.prices);
-      setLoading(false);
+      if (isInitialLoad) {
+        setLoading(false);
+        setIsInitialLoad(false);
+      }
       return;
     }
 
     try {
-      setLoading(true);
+      if (isInitialLoad) {
+        setLoading(true);
+      }
       setError(null);
 
       const response = await getAllPrices();
@@ -99,9 +104,12 @@ export function usePriceData() {
       setError(errorMessage);
       console.error("Error fetching price data:", err);
     } finally {
-      setLoading(false);
+      if (isInitialLoad) {
+        setLoading(false);
+        setIsInitialLoad(false);
+      }
     }
-  }, []);
+  }, [isInitialLoad]);
 
   useEffect(() => {
     fetchPrices();
@@ -161,10 +169,18 @@ export function usePortfolioData() {
 
   useEffect(() => {
     fetchPortfolio();
-
     const interval = setInterval(fetchPortfolio, CACHE_DURATION.portfolio);
     return () => clearInterval(interval);
   }, [fetchPortfolio]);
 
   return { portfolio, loading, error, refetch: fetchPortfolio };
+}
+
+export function clearDataCache() {
+  dataCache.markets = null;
+  dataCache.prices = null;
+  dataCache.portfolio = null;
+  dataCache.lastMarketFetch = 0;
+  dataCache.lastPriceFetch = 0;
+  dataCache.lastPortfolioFetch = 0;
 }

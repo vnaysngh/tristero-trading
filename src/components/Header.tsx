@@ -8,7 +8,8 @@ export function Header() {
 
   const navItems = [
     { href: "/", label: "Markets" },
-    { href: "/positions", label: "Positions" }
+    { href: "/positions", label: "Positions" },
+    { href: "/trades", label: "Trade History" }
   ];
 
   return (
@@ -25,7 +26,6 @@ export function Header() {
           </div>
         </div>
 
-        {/* Navigation */}
         <nav className="mt-6">
           <div className="flex space-x-8">
             {navItems.map((item) => (

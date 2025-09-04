@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+// Market details page component with chart and trading information
+
+import { useState } from "react";
 import { useMarketData, usePriceData } from "@/hooks/useMarket";
 import { PriceChart } from "./PriceChart";
-import { TradingForm } from "./TradingForm";
+import { MarketTradingForm } from "./TradingForm";
 import { formatPrice } from "@/lib/api";
 import Link from "next/link";
 
@@ -55,12 +57,6 @@ export function MarketDetails({ symbol }: MarketDetailsProps) {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link
-                href="/"
-                className="text-blue-600 dark:text-blue-400 hover:underline"
-              >
-                ← Back to Markets
-              </Link>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                   {market.name}
@@ -80,6 +76,14 @@ export function MarketDetails({ symbol }: MarketDetailsProps) {
                 </div>
               </div>
             )}
+          </div>
+          <div className="mt-4">
+            <Link
+              href="/"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              ← Back to Markets
+            </Link>
           </div>
         </div>
       </header>
@@ -153,7 +157,7 @@ export function MarketDetails({ symbol }: MarketDetailsProps) {
           </div>
 
           <div className="space-y-6">
-            <TradingForm selectedCoin={symbol} />
+            <MarketTradingForm selectedCoin={symbol} />
           </div>
         </div>
       </main>
