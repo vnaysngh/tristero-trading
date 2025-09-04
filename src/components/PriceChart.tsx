@@ -4,11 +4,6 @@ import { useState, useEffect } from "react";
 import { getPriceHistory, formatPrice } from "@/lib/api";
 import { CandleData } from "@/types/trading";
 
-interface PriceChartProps {
-  coin: string;
-  interval?: string;
-}
-
 function ChartSkeleton() {
   return (
     <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
@@ -116,13 +111,19 @@ function CandlestickChart({ data }: { data: CandleData }) {
 }
 
 // Main chart component
-export function PriceChart({ coin, interval = "1h" }: PriceChartProps) {
+export function PriceChart({
+  selectedSymbol,
+  selectedInterval
+}: {
+  selectedSymbol: string;
+  selectedInterval: string;
+}) {
   const [chartData, setChartData] = useState<CandleData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!coin) {
+    if (!selectedSymbol) {
       setChartData(null);
       return;
     }
@@ -133,7 +134,11 @@ export function PriceChart({ coin, interval = "1h" }: PriceChartProps) {
 
       try {
         const startTime = Date.now() - 24 * 60 * 60 * 1000;
-        const response = await getPriceHistory(coin, interval, startTime);
+        const response = await getPriceHistory(
+          selectedSymbol,
+          selectedInterval,
+          startTime
+        );
         if (response.success && response.data) {
           setChartData(response.data);
         } else {
@@ -150,9 +155,9 @@ export function PriceChart({ coin, interval = "1h" }: PriceChartProps) {
     };
 
     fetchChartData();
-  }, [coin, interval]);
+  }, [selectedSymbol, selectedInterval]);
 
-  if (!coin) {
+  if (!selectedSymbol) {
     return (
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
         <div className="text-center py-8 text-gray-500 dark:text-gray-400">

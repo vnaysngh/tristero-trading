@@ -5,17 +5,17 @@ import { tradingService, MarketOrderRequest } from "@/lib/trading-service";
 import { useMarketData } from "@/hooks/useMarket";
 
 interface MarketTradingFormProps {
-  selectedCoin?: string;
+  selectedSymbol?: string;
   currentPrice?: string;
 }
 
 export function MarketTradingForm({
-  selectedCoin,
+  selectedSymbol,
   currentPrice
 }: MarketTradingFormProps) {
   const [isPending, startTransition] = useTransition();
   const [formData, setFormData] = useState({
-    coin: selectedCoin || "",
+    coin: selectedSymbol || "",
     side: "long" as "long" | "short",
     size: "",
     sizePercentage: 0
@@ -29,10 +29,10 @@ export function MarketTradingForm({
   const [marginRequired, setMarginRequired] = useState(0);
 
   useEffect(() => {
-    if (selectedCoin && selectedCoin !== formData.coin) {
+    if (selectedSymbol && selectedSymbol !== formData.coin) {
       setFormData((prev) => ({
         ...prev,
-        coin: selectedCoin
+        coin: selectedSymbol
       }));
       setFormData((prev) => ({
         ...prev,
@@ -42,14 +42,14 @@ export function MarketTradingForm({
       setOrderValue(0);
       setMarginRequired(0);
     }
-  }, [selectedCoin, formData.coin]);
+  }, [selectedSymbol, formData.coin]);
 
   const { markets } = useMarketData();
 
   const leverage = 2;
 
   const calculateOrderDetails = (size: number) => {
-    if (!selectedCoin || !currentPrice) return;
+    if (!selectedSymbol || !currentPrice) return;
 
     const price = parseFloat(currentPrice.toString());
     const calculatedOrderValue = size * price;
@@ -173,10 +173,10 @@ export function MarketTradingForm({
   };
 
   useEffect(() => {
-    if (formData.size && selectedCoin && currentPrice) {
+    if (formData.size && selectedSymbol && currentPrice) {
       calculateOrderDetails(parseFloat(formData.size.toString()));
     }
-  }, [formData.size, selectedCoin, currentPrice]);
+  }, [formData.size, selectedSymbol, currentPrice]);
 
   const getUSDCBalance = () => {
     if (!accountData?.marginSummary) return "0.00";
