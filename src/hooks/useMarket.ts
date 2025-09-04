@@ -1,186 +1,48 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { getMarketData, getAllPrices, getPortfolioData } from "@/lib/api";
-import { MarketData, PriceData, PortfolioData } from "@/types/trading";
-
-const dataCache = {
-  markets: null as MarketData[] | null,
-  prices: null as PriceData | null,
-  portfolio: null as PortfolioData | null,
-  lastMarketFetch: 0,
-  lastPriceFetch: 0,
-  lastPortfolioFetch: 0
-};
-
-const CACHE_DURATION = {
-  markets: 30000,
-  prices: 3000,
-  portfolio: 10000
-};
+import {
+  useMarketData as useMarketDataQuery,
+  usePriceData as usePriceDataQuery,
+  usePortfolioData as usePortfolioDataQuery
+} from "./useMarketQueries";
 
 export function useMarketData() {
-  const [markets, setMarkets] = useState<MarketData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const query = useMarketDataQuery();
 
-  const fetchMarkets = useCallback(async () => {
-    const now = Date.now();
-
-    if (
-      dataCache.markets &&
-      now - dataCache.lastMarketFetch < CACHE_DURATION.markets
-    ) {
-      setMarkets(dataCache.markets);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await getMarketData();
-      if (response.success && response.data) {
-        dataCache.markets = response.data;
-        dataCache.lastMarketFetch = now;
-        setMarkets(response.data);
-      } else {
-        throw new Error(response.error || "Failed to fetch market data");
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      setError(errorMessage);
-      console.error("Error fetching market data:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchMarkets();
-  }, [fetchMarkets]);
-
-  return { markets, loading, error, refetch: fetchMarkets };
+  return {
+    markets: query.data || [],
+    loading: query.isLoading,
+    error: query.error?.message || null,
+    refetch: query.refetch
+  };
 }
 
 export function usePriceData() {
-  const [prices, setPrices] = useState<PriceData>({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const query = usePriceDataQuery();
 
-  const fetchPrices = useCallback(async () => {
-    const now = Date.now();
-
-    if (
-      dataCache.prices &&
-      now - dataCache.lastPriceFetch < CACHE_DURATION.prices
-    ) {
-      setPrices(dataCache.prices);
-      if (isInitialLoad) {
-        setLoading(false);
-        setIsInitialLoad(false);
-      }
-      return;
-    }
-
-    try {
-      if (isInitialLoad) {
-        setLoading(true);
-      }
-      setError(null);
-
-      const response = await getAllPrices();
-      if (response.success && response.data) {
-        dataCache.prices = response.data;
-        dataCache.lastPriceFetch = now;
-        setPrices(response.data);
-      } else {
-        throw new Error(response.error || "Failed to fetch price data");
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      setError(errorMessage);
-      console.error("Error fetching price data:", err);
-    } finally {
-      if (isInitialLoad) {
-        setLoading(false);
-        setIsInitialLoad(false);
-      }
-    }
-  }, [isInitialLoad]);
-
-  useEffect(() => {
-    fetchPrices();
-    const interval = setInterval(fetchPrices, CACHE_DURATION.prices);
-    return () => clearInterval(interval);
-  }, [fetchPrices]);
-
-  return { prices, loading, error, refetch: fetchPrices };
+  return {
+    prices: query.data || {},
+    loading: query.isLoading,
+    error: query.error?.message || null,
+    refetch: query.refetch
+  };
 }
 
 export function usePortfolioData() {
-  const [portfolio, setPortfolio] = useState<PortfolioData>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const query = usePortfolioDataQuery();
 
-  const fetchPortfolio = useCallback(async () => {
-    const now = Date.now();
-
-    if (
-      dataCache.portfolio &&
-      now - dataCache.lastPortfolioFetch < CACHE_DURATION.portfolio
-    ) {
-      setPortfolio(dataCache.portfolio);
-      if (isInitialLoad) {
-        setLoading(false);
-        setIsInitialLoad(false);
-      }
-      return;
-    }
-
-    try {
-      if (isInitialLoad) {
-        setLoading(true);
-      }
-      setError(null);
-
-      const response = await getPortfolioData();
-      if (response.success && response.data) {
-        dataCache.portfolio = response.data as PortfolioData;
-        dataCache.lastPortfolioFetch = now;
-        setPortfolio(response.data as PortfolioData);
-      } else {
-        throw new Error(response.error || "Failed to fetch portfolio data");
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      setError(errorMessage);
-      console.error("Error fetching portfolio data:", err);
-    } finally {
-      if (isInitialLoad) {
-        setLoading(false);
-        setIsInitialLoad(false);
-      }
-    }
-  }, [isInitialLoad]);
-
-  useEffect(() => {
-    fetchPortfolio();
-    const interval = setInterval(fetchPortfolio, CACHE_DURATION.portfolio);
-    return () => clearInterval(interval);
-  }, [fetchPortfolio]);
-
-  return { portfolio, loading, error, refetch: fetchPortfolio };
+  return {
+    portfolio: query.data || [],
+    loading: query.isLoading,
+    error: query.error?.message || null,
+    refetch: query.refetch
+  };
 }
 
 export function clearDataCache() {
-  dataCache.markets = null;
-  dataCache.prices = null;
-  dataCache.portfolio = null;
-  dataCache.lastMarketFetch = 0;
-  dataCache.lastPriceFetch = 0;
-  dataCache.lastPortfolioFetch = 0;
+  // React Query handles caching automatically, so this function is no longer needed
+  // but we keep it for backward compatibility
+  console.warn(
+    "clearDataCache is deprecated when using React Query. Caching is handled automatically."
+  );
 }

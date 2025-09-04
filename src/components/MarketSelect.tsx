@@ -1,15 +1,14 @@
 import { useDebounce } from "@/hooks/useDebounce";
 import React, { useMemo, useState, useEffect } from "react";
-import { MarketData, PriceData } from "@/types/trading";
+import { PriceData } from "@/types/trading";
 import { formatPrice } from "@/lib/api";
+import { useMarketData } from "@/hooks/useMarket";
 
 const MarketSelect = ({
   selectedSymbol,
   setSelectedSymbol,
   selectedInterval,
   setSelectedInterval,
-  loading,
-  markets,
   prices,
   currentPrice
 }: {
@@ -17,8 +16,6 @@ const MarketSelect = ({
   setSelectedSymbol: (symbol: string) => void;
   selectedInterval: string;
   setSelectedInterval: (interval: string) => void;
-  loading: boolean;
-  markets: MarketData[];
   prices: PriceData;
   currentPrice: string;
 }) => {
@@ -26,6 +23,8 @@ const MarketSelect = ({
   const [assetSearchTerm, setAssetSearchTerm] = useState("");
 
   const debouncedSearchTerm = useDebounce(assetSearchTerm, 300);
+
+  const { markets, loading } = useMarketData();
 
   const filteredMarkets = useMemo(() => {
     if (!markets.length || !prices || loading) return [];

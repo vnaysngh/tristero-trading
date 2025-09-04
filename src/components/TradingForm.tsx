@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useEffect } from "react";
 import { tradingService, MarketOrderRequest } from "@/lib/trading-service";
-import { useMarketData } from "@/hooks/useMarket";
+import { useMarketData } from "@/hooks/useMarketQueries";
 
 interface MarketTradingFormProps {
   selectedSymbol?: string;

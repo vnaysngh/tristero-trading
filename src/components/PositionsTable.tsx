@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usePriceData } from "@/hooks/useMarket";
+import { usePriceData } from "@/hooks/useMarketQueries";
 import { formatPrice } from "@/lib/api";
 import { tradingService } from "@/lib/trading-service";
 

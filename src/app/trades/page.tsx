@@ -1,4 +1,3 @@
-import { Header } from "@/components/Header";
 import { TradeHistory } from "@/components/TradeHistory";
 
 export default function TradesPage() {

@@ -5,7 +5,7 @@ import { PriceChart } from "@/components/PriceChart";
 import { MarketTradingForm } from "@/components/TradingForm";
 import { useMarketData, usePriceData } from "@/hooks/useMarket";
 import MarketSelect from "@/components/MarketSelect";
-import { MarketInfo } from "@/components/MarketInfo";
+import { MarketInfo } from "./MarketInfo";
 
 export const dynamic = "force-dynamic";
 
@@ -13,9 +13,8 @@ export default function Home() {
   const [selectedSymbol, setSelectedSymbol] = useState("ETH");
   const [selectedInterval, setSelectedInterval] = useState("1h");
 
-  const { markets, loading: marketsLoading } = useMarketData();
   const { prices } = usePriceData();
-
+  const { markets } = useMarketData();
   const market = markets.find((m) => m.name === selectedSymbol);
   const currentPrice = prices[selectedSymbol];
 
@@ -30,8 +29,6 @@ export default function Home() {
                 setSelectedSymbol={setSelectedSymbol}
                 selectedInterval={selectedInterval}
                 setSelectedInterval={setSelectedInterval}
-                loading={marketsLoading}
-                markets={markets}
                 prices={prices}
                 currentPrice={currentPrice}
               />
