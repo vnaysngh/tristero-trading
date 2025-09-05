@@ -1,4 +1,4 @@
-import { DATE_FORMAT_OPTIONS } from "./types/trading";
+import { DATE_FORMAT_OPTIONS } from "./constants";
 
 export function formatPrice(
   price: string | number,

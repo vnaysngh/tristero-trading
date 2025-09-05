@@ -18,19 +18,6 @@ export interface PriceData {
   [coin: string]: string;
 }
 
-export interface CandleBar {
-  t: number; // start time
-  T: number; // end time
-  s: string; // symbol
-  i: string; // interval
-  o: string; // open
-  c: string; // close
-  h: string; // high
-  l: string; // low
-  v: string; // volume
-  n: number; // number of trades
-}
-
 export type CandleData = CandleBar[];
 
 export interface Position {
@@ -156,16 +143,6 @@ export interface ProcessedPosition {
 
 export type TradeHistoryState = ProcessedPosition[];
 
-export const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
-  month: "2-digit",
-  day: "2-digit",
-  year: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit",
-  hour12: false
-};
-
 export interface TradingFormState {
   formData: FormData;
   calculations: CalculationResult;
@@ -182,10 +159,27 @@ export type ValidationMessages = {
   readonly PLACE_ORDER: "Place Order";
 };
 
-export const VALIDATION_MESSAGES: ValidationMessages = {
-  PLACING: "Placing Order...",
-  NOT_ENOUGH_MARGIN: "Not Enough Margin",
-  MIN_MARGIN: "Min Margin $10",
-  ENTER_SIZE: "Enter Size",
-  PLACE_ORDER: "Place Order"
-} as const;
+export interface ChartState {
+  data: CandleData | null;
+  loading: boolean;
+  error: string | null;
+}
+
+export interface CandleBar {
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+}
+
+export interface ChartDimensions {
+  width: number;
+  height: number;
+  viewBox: string;
+}
+
+export interface PriceRange {
+  max: number;
+  min: number;
+  range: number;
+}

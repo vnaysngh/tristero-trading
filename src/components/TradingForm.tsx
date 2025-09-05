@@ -3,7 +3,12 @@
 import { useState, useEffect } from "react";
 import { useAppState } from "@/state/store";
 import { useAccountData, usePlaceOrder } from "@/hooks/useMarket";
-import { leverage, USER_ADDRESS, MIN_MARGIN_REQUIRED } from "@/constants";
+import {
+  leverage,
+  USER_ADDRESS,
+  MIN_MARGIN_REQUIRED,
+  VALIDATION_MESSAGES
+} from "@/constants";
 import SideButton from "./SideButton";
 import LeverageDisplay from "./LeverageDisplay";
 import StatusMessage from "./StatusMessage";
@@ -19,7 +24,6 @@ import {
   ValidationResult,
   OrderSide,
   OrderRequest,
-  VALIDATION_MESSAGES,
   TradingFormState
 } from "@/types/trading";
 
