@@ -5,69 +5,88 @@ import {
   usePriceData as usePriceDataQuery,
   usePortfolioData as usePortfolioDataQuery,
   usePositions as usePositionsQuery,
-  useClosePosition as useClosePositionMutation
+  useClosePosition as useClosePositionMutation,
+  useAccountData as useAccountDataQuery,
+  usePlaceOrder as usePlaceOrderMutation
 } from "./useMarketQueries";
 
 export function useMarketData() {
-  const query = useMarketDataQuery();
+  const { data, isLoading, error, refetch } = useMarketDataQuery();
 
   return {
-    markets: query.data || [],
-    loading: query.isLoading,
-    error: query.error?.message || null,
-    refetch: query.refetch
+    markets: data || [],
+    loading: isLoading,
+    error: error?.message || null,
+    refetch: refetch
   };
 }
 
 export function usePriceData() {
-  const query = usePriceDataQuery();
+  const { data, isLoading, error, refetch } = usePriceDataQuery();
 
   return {
-    prices: query.data || {},
-    loading: query.isLoading,
-    error: query.error?.message || null,
-    refetch: query.refetch
+    prices: data || {},
+    loading: isLoading,
+    error: error?.message || null,
+    refetch: refetch
   };
 }
 
 export function usePortfolioData() {
-  const query = usePortfolioDataQuery();
+  const { data, isLoading, error, refetch } = usePortfolioDataQuery();
 
   return {
-    portfolio: query.data || [],
-    loading: query.isLoading,
-    error: query.error?.message || null,
-    refetch: query.refetch
+    portfolio: data || [],
+    loading: isLoading,
+    error: error?.message || null,
+    refetch: refetch
   };
 }
 
 export function usePositions() {
-  const query = usePositionsQuery();
+  const { data, isLoading, error, refetch } = usePositionsQuery();
 
   return {
-    positions: query.data || [],
-    loading: query.isLoading,
-    error: query.error?.message || null,
-    refetch: query.refetch
+    positions: data || [],
+    loading: isLoading,
+    error: error?.message || null,
+    refetch: refetch
   };
 }
 
 export function useClosePosition() {
-  const mutation = useClosePositionMutation();
+  const { mutateAsync, isPending, error, isSuccess, reset } =
+    useClosePositionMutation();
 
   return {
-    closePosition: mutation.mutateAsync,
-    isClosing: mutation.isPending,
-    closeError: mutation.error?.message || null,
-    closeSuccess: mutation.isSuccess,
-    reset: mutation.reset
+    closePosition: mutateAsync,
+    isClosing: isPending,
+    closeError: error?.message || null,
+    closeSuccess: isSuccess,
+    reset: reset
   };
 }
 
-export function clearDataCache() {
-  // React Query handles caching automatically, so this function is no longer needed
-  // but we keep it for backward compatibility
-  console.warn(
-    "clearDataCache is deprecated when using React Query. Caching is handled automatically."
-  );
+export function useAccountData(userAddress: string) {
+  const { data, isLoading, error, refetch } = useAccountDataQuery(userAddress);
+
+  return {
+    accountData: data || null,
+    loading: isLoading,
+    error: error?.message || null,
+    refetch: refetch
+  };
+}
+
+export function usePlaceOrder() {
+  const { mutateAsync, isPending, error, isSuccess, reset } =
+    usePlaceOrderMutation();
+
+  return {
+    placeOrder: mutateAsync,
+    isPlacing: isPending,
+    orderError: error?.message || null,
+    orderSuccess: isSuccess,
+    reset: reset
+  };
 }

@@ -13,7 +13,6 @@ const MarketDropdown = ({
   ticker: string;
 }) => {
   const currentPrice = useAppState((s) => s.prices[market.name]);
-  console.log("should not render");
   return (
     <button
       key={market.name}

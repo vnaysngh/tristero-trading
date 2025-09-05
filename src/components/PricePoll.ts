@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useAppState } from "@/state/store"; // adjust import to your store path
 import { usePriceData } from "@/hooks/useMarket";
 
-export default function PricesPoller() {
+export default function PricePoll() {
   const setPrices = useAppState((s) => s.setPrices);
 
   const { loading: priceLoading, prices } = usePriceData();

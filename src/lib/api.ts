@@ -168,66 +168,79 @@ export async function initializeTradingService(): Promise<{
   }
 }
 
-/* export async function handleClosePosition(
-  coin: string,
-  isTradingServiceInitialized: boolean,
-  setCloseError: (error: string | null) => void,
-  setCloseSuccess: (success: string | null) => void,
-  setClosingPositions: React.Dispatch<React.SetStateAction<Set<string>>>,
-  setIsTradingServiceInitialized: (initialized: boolean) => void,
-  refetchPositions: () => Promise<any>
-): Promise<ClosePositionResult> {
-  setCloseError(null);
-  setCloseSuccess(null);
-  setClosingPositions((prev) => new Set(prev).add(coin));
-
+export async function getAccountData(
+  userAddress: string
+): Promise<ApiResponse<any>> {
   try {
-    let initialized = isTradingServiceInitialized;
-
-    if (!initialized) {
-      const initResult = await initializeTradingService();
-      if (!initResult.success) {
-        setCloseError(
-          initResult.error || "Failed to initialize trading service"
-        );
-        return { success: false, error: initResult.error };
-      }
-      initialized = true;
-      setIsTradingServiceInitialized(true);
-    }
-
-    const result = await tradingService.closePosition(coin);
+    const result = await tradingService.getClearinghouseState(userAddress);
 
     if (result.success) {
-      setCloseSuccess(`Position ${coin} closed successfully!`);
-      await refetchPositions();
-      return {
-        success: true,
-        message: `Position ${coin} closed successfully!`
-      };
-    } else {
-      const errorMsg = result.error || `Failed to close position ${coin}`;
-      setCloseError(errorMsg);
-      return { success: false, error: errorMsg };
-    }
-  } catch (err) {
-    let errorMessage: string;
-
-    if (err instanceof Error && err.message.includes("not initialized")) {
-      errorMessage =
-        "Trading service not initialized. Please configure your private key in environment variables.";
-    } else {
-      errorMessage =
-        err instanceof Error ? err.message : "An unexpected error occurred";
+      return { success: true, data: result.data };
     }
 
-    setCloseError(errorMessage);
-    return { success: false, error: errorMessage };
-  } finally {
-    setClosingPositions((prev) => {
-      const newSet = new Set(prev);
-      newSet.delete(coin);
-      return newSet;
-    });
+    return {
+      success: false,
+      error: result.error || "Failed to fetch account data"
+    };
+  } catch (error) {
+    console.error("Error fetching account data:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Failed to fetch account data"
+    };
   }
-} */
+}
+
+export interface PlaceOrderRequest {
+  coin: string;
+  side: "long" | "short";
+  size: number;
+  leverage: number;
+}
+
+export async function placeOrder(
+  request: PlaceOrderRequest
+): Promise<ApiResponse<any>> {
+  try {
+    // Initialize trading service if needed
+    const initResult = await initializeTradingService();
+    if (!initResult.success) {
+      return {
+        success: false,
+        error: initResult.error || "Failed to initialize trading service"
+      };
+    }
+
+    // Update leverage
+    await tradingService.updateLeverage(
+      `${request.coin}-PERP`,
+      request.leverage
+    );
+
+    // Place market order
+    const orderRequest = {
+      coin: request.coin,
+      isBuy: request.side === "long",
+      size: request.size,
+      leverage: request.leverage
+    };
+
+    const result = await tradingService.placeMarketOrder(orderRequest);
+
+    if (result.success) {
+      return { success: true, data: result.data };
+    }
+
+    return {
+      success: false,
+      error: result.error || "Failed to place order"
+    };
+  } catch (error) {
+    console.error("Error placing order:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to place order"
+    };
+  }
+}

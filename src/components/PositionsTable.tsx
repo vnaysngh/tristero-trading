@@ -14,6 +14,8 @@ const PositionsTable = ({
   const currentPrice = useAppState((s) => s.prices[position.coin]);
 
   const size = parseFloat(position.szi || "0");
+  const isLong = size > 0;
+  const isShort = size < 0;
 
   const priceDifference =
     size >= 0
@@ -21,7 +23,7 @@ const PositionsTable = ({
       : position.entryPx - parseFloat(currentPrice);
   const pnl = Math.abs(size) * priceDifference;
   const pnlComp =
-    Math.abs(size) * priceDifference
+    pnl >= 0
       ? `+$${formatPrice(pnl.toString())}`
       : `-$${formatPrice(Math.abs(pnl).toString())}`;
   const marginUsed = parseFloat(position.marginUsed || "0");
@@ -38,9 +40,24 @@ const PositionsTable = ({
     >
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center space-x-3">
-          <div className="w-1 h-8 bg-green-500 rounded-full"></div>
+          <div
+            className={`w-1 h-8 rounded-full ${
+              isLong ? "bg-green-500" : isShort ? "bg-red-500" : "bg-gray-400"
+            }`}
+          ></div>
           <div className="font-semibold text-gray-900 dark:text-white">
             {position.coin} {position.leverage?.value || 1}x
+            <span
+              className={`ml-2 text-xs px-2 py-1 rounded-full ${
+                isLong
+                  ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                  : isShort
+                  ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                  : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+              }`}
+            >
+              {isLong ? "LONG" : isShort ? "SHORT" : "NEUTRAL"}
+            </span>
           </div>
         </div>
       </td>

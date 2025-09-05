@@ -5,7 +5,10 @@ import {
   getMarketData,
   getAllPrices,
   getPortfolioData,
-  initializeTradingService
+  initializeTradingService,
+  getAccountData,
+  placeOrder,
+  PlaceOrderRequest
 } from "@/lib/api";
 import { useAppState } from "@/state/store";
 import { tradingService } from "@/lib/trading-service";
@@ -112,6 +115,47 @@ export function useClosePosition() {
     },
     onError: (error) => {
       console.error("Error closing position:", error);
+    }
+  });
+}
+
+export function useAccountData(userAddress: string) {
+  return useQuery({
+    queryKey: ["accountData", userAddress],
+    queryFn: async () => {
+      const response = await getAccountData(userAddress);
+      if (response.success && response.data) {
+        return response.data;
+      }
+      throw new Error(response.error || "Failed to fetch account data");
+    },
+    staleTime: 10 * 1000, // 10 seconds
+    gcTime: 2 * 60 * 1000, // 2 minutes
+    retry: 3,
+    refetchInterval: 30 * 1000 // Refetch every 30 seconds
+  });
+}
+
+export function usePlaceOrder() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (request: PlaceOrderRequest) => {
+      const response = await placeOrder(request);
+
+      if (!response.success) {
+        throw new Error(response.error || "Failed to place order");
+      }
+
+      return response.data;
+    },
+    onSuccess: (data) => {
+      // Invalidate and refetch account data and positions
+      queryClient.invalidateQueries({ queryKey: ["accountData"] });
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+    },
+    onError: (error) => {
+      console.error("Error placing order:", error);
     }
   });
 }

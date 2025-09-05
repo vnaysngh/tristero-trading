@@ -1,182 +1,109 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
-import { tradingService, MarketOrderRequest } from "@/lib/trading-service";
-import { useMarketData } from "@/hooks/useMarketQueries";
+import { useState, useEffect, useMemo } from "react";
+import { useAppState } from "@/state/store";
+import { useAccountData, usePlaceOrder } from "@/hooks/useMarket";
 
-interface MarketTradingFormProps {
-  ticker?: string;
-  currentPrice?: string;
-}
-
-export function MarketTradingForm({
-  ticker,
-  currentPrice
-}: MarketTradingFormProps) {
-  const [isPending, startTransition] = useTransition();
+export function MarketTradingForm() {
+  const ticker = useAppState((s) => s.ticker);
+  const currentPrice = useAppState((s) => s.prices[ticker]);
   const [formData, setFormData] = useState({
     coin: ticker || "",
     side: "long" as "long" | "short",
     size: "",
     sizePercentage: 0
   });
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [accountData, setAccountData] = useState<any>(null);
-  const [loadingBalance, setLoadingBalance] = useState(false);
-  const [orderValue, setOrderValue] = useState(0);
-  const [marginRequired, setMarginRequired] = useState(0);
+
+  // Use React Query hooks
+  const {
+    accountData,
+    loading: loadingBalance,
+    error: accountError,
+    refetch: refetchAccount
+  } = useAccountData("0x32664952e3CE32189b193a4E4A918b460b271D61");
+
+  const {
+    placeOrder,
+    isPlacing,
+    orderError,
+    orderSuccess,
+    reset: resetOrder
+  } = usePlaceOrder();
 
   useEffect(() => {
     if (ticker && ticker !== formData.coin) {
       setFormData((prev) => ({
         ...prev,
-        coin: ticker
-      }));
-      setFormData((prev) => ({
-        ...prev,
+        coin: ticker,
         size: "",
         sizePercentage: 0
       }));
-      setOrderValue(0);
-      setMarginRequired(0);
     }
   }, [ticker, formData.coin]);
 
-  const { markets } = useMarketData();
-
   const leverage = 2;
 
-  const calculateOrderDetails = (size: number) => {
-    if (!ticker || !currentPrice) return;
-
+  // Derived variables using useMemo
+  const orderValue = useMemo(() => {
+    if (!ticker || !currentPrice || !formData.size) return 0;
+    const size = parseFloat(formData.size);
+    if (isNaN(size) || size <= 0) return 0;
     const price = parseFloat(currentPrice.toString());
-    const calculatedOrderValue = size * price;
-    const calculatedMarginRequired = calculatedOrderValue / leverage;
+    return size * price;
+  }, [ticker, currentPrice, formData.size]);
 
-    setOrderValue(calculatedOrderValue);
-    setMarginRequired(calculatedMarginRequired);
-  };
+  const marginRequired = useMemo(() => {
+    return orderValue / leverage;
+  }, [orderValue, leverage]);
 
   const hasEnoughMargin = () => {
     const usdcBalance = parseFloat(getUSDCBalance());
     return marginRequired <= usdcBalance;
   };
 
-  const fetchAccountData = async (userAddress: string) => {
-    setLoadingBalance(true);
-    try {
-      const result = await tradingService.getClearinghouseState(userAddress);
-      if (result.success) {
-        setAccountData(result.data);
-      } else {
-        console.error("Failed to fetch account data:", result.error);
-      }
-    } catch (err) {
-      console.error("Error fetching account data:", err);
-    } finally {
-      setLoadingBalance(false);
-    }
-  };
-
-  const handleInitialize = async () => {
-    const config = {
-      privateKey: process.env.NEXT_PUBLIC_PRIVATE_KEY || "",
-      userAddress: "",
-      testnet: false,
-      vaultAddress: undefined as string | undefined
-    };
-
-    if (!config.privateKey) {
-      setError(
-        "Please configure your private key and user address in environment variables. Create a .env.local file with NEXT_PUBLIC_PRIVATE_KEY and NEXT_PUBLIC_USER_ADDRESS"
-      );
-      return;
-    }
-
-    try {
-      await tradingService.initialize(config);
-      setIsInitialized(true);
-      setSuccess("Trading service initialized successfully!");
-
-      await fetchAccountData("0x32664952e3CE32189b193a4E4A918b460b271D61");
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to initialize trading service"
-      );
-    }
+  const hasMinimumMargin = () => {
+    return marginRequired >= 10;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
-
-    if (!isInitialized) {
-      setError("Please initialize the trading service first");
-      return;
-    }
+    resetOrder();
 
     if (!formData.coin || !formData.size) {
-      setError("Please select a coin and enter a size");
       return;
     }
 
     const size = parseFloat(formData.size);
     if (isNaN(size) || size <= 0) {
-      setError("Please enter a valid size");
       return;
     }
 
-    startTransition(async () => {
-      try {
-        await tradingService.updateLeverage(`${formData.coin}-PERP`, leverage);
+    if (!hasMinimumMargin()) {
+      return;
+    }
 
-        const orderRequest: MarketOrderRequest = {
-          coin: formData.coin,
-          isBuy: formData.side === "long",
-          size: size,
-          leverage: leverage
-        };
+    const orderRequest = {
+      coin: formData.coin,
+      side: formData.side,
+      size: size,
+      leverage: leverage
+    };
 
-        const result = await tradingService.placeMarketOrder(orderRequest);
-
-        if (result.success) {
-          setSuccess("Market order placed successfully!");
-          setFormData((prev) => ({
-            ...prev,
-            size: "",
-            sizePercentage: 0
-          }));
-        } else {
-          setError(result.error || "Failed to place market order");
-        }
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "An unexpected error occurred"
-        );
+    placeOrder(orderRequest, {
+      onSuccess: () => {
+        setFormData((prev) => ({
+          ...prev,
+          size: "",
+          sizePercentage: 0
+        }));
       }
     });
   };
 
   const handleInputChange = (field: string, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    setError(null);
-    setSuccess(null);
-
-    if (field === "size") {
-      calculateOrderDetails(parseFloat(value.toString()) || 0);
-    }
+    resetOrder();
   };
-
-  useEffect(() => {
-    if (formData.size && ticker && currentPrice) {
-      calculateOrderDetails(parseFloat(formData.size.toString()));
-    }
-  }, [formData.size, ticker, currentPrice]);
 
   const getUSDCBalance = () => {
     if (!accountData?.marginSummary) return "0.00";
@@ -199,17 +126,6 @@ export function MarketTradingForm({
       <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
         Market Order
       </h2>
-
-      {!isInitialized && (
-        <div className="mb-6">
-          <button
-            onClick={handleInitialize}
-            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition-colors"
-          >
-            Initialize Trading
-          </button>
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex space-x-4 mb-6">
@@ -255,20 +171,14 @@ export function MarketTradingForm({
                   `$${getUSDCBalance()}`
                 )}
               </span>
-              {isInitialized && (
-                <button
-                  type="button"
-                  onClick={() =>
-                    fetchAccountData(
-                      "0x32664952e3CE32189b193a4E4A918b460b271D61"
-                    )
-                  }
-                  disabled={loadingBalance}
-                  className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 disabled:opacity-50"
-                >
-                  {loadingBalance ? "..." : "↻"}
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => refetchAccount()}
+                disabled={loadingBalance}
+                className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 disabled:opacity-50"
+              >
+                {loadingBalance ? "..." : "↻"}
+              </button>
             </div>
           </div>
           <div className="flex justify-between items-center">
@@ -325,7 +235,7 @@ export function MarketTradingForm({
             </span>
             <span
               className={`${
-                !hasEnoughMargin() && formData.size
+                (!hasEnoughMargin() || !hasMinimumMargin()) && formData.size
                   ? "text-red-600 dark:text-red-400"
                   : "text-gray-900 dark:text-white"
               }`}
@@ -333,6 +243,9 @@ export function MarketTradingForm({
               ${marginRequired.toFixed(2)}
               {!hasEnoughMargin() && formData.size && (
                 <span className="ml-1 text-xs">(Insufficient)</span>
+              )}
+              {!hasMinimumMargin() && formData.size && hasEnoughMargin() && (
+                <span className="ml-1 text-xs">(Min $10)</span>
               )}
             </span>
           </div>
@@ -342,41 +255,55 @@ export function MarketTradingForm({
           </div>
         </div>
 
-        {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-md">
-            {error}
+        {(orderError || accountError) && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-md flex justify-between items-center">
+            <span>{orderError || accountError}</span>
+            <button
+              onClick={resetOrder}
+              className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+            >
+              ×
+            </button>
           </div>
         )}
 
-        {success && (
-          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-md">
-            {success}
+        {orderSuccess && (
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-md flex justify-between items-center">
+            <span>Order placed successfully!</span>
+            <button
+              onClick={resetOrder}
+              className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300"
+            >
+              ×
+            </button>
           </div>
         )}
 
         <button
           type="submit"
           disabled={
-            isPending ||
-            !isInitialized ||
+            isPlacing ||
             !hasEnoughMargin() ||
+            !hasMinimumMargin() ||
             !formData.size ||
             parseFloat(formData.size.toString()) <= 0
           }
           className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
-            isPending ||
-            !isInitialized ||
+            isPlacing ||
             !hasEnoughMargin() ||
+            !hasMinimumMargin() ||
             !formData.size ||
             parseFloat(formData.size.toString()) <= 0
               ? "bg-gray-600 text-gray-400 cursor-not-allowed"
               : "bg-green-600 hover:bg-green-700 text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
           }`}
         >
-          {isPending
+          {isPlacing
             ? "Placing Order..."
-            : !hasEnoughMargin() && isInitialized
+            : !hasEnoughMargin()
             ? "Not Enough Margin"
+            : !hasMinimumMargin()
+            ? "Min Margin $10"
             : !formData.size || parseFloat(formData.size.toString()) <= 0
             ? "Enter Size"
             : "Place Order"}
