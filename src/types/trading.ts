@@ -127,3 +127,41 @@ export const INITIAL_FORM_DATA: FormData = {
   size: "",
   sizePercentage: 0
 };
+
+export interface RawFill {
+  time: string;
+  coin: string;
+  dir: string;
+  px: string;
+  sz: string;
+  fee: string;
+  closedPnl: string;
+  hash: string;
+  tid: number;
+}
+
+export interface ProcessedPosition {
+  time: string;
+  coin: string;
+  direction: string;
+  price: string;
+  size: string;
+  tradeValue: string;
+  fee: string;
+  closedPnl: string;
+  closedPnlValue: number;
+  hash: string;
+  tid: number;
+}
+
+export type TradeHistoryState = ProcessedPosition[];
+
+export const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+  month: "2-digit",
+  day: "2-digit",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false
+};

@@ -6,7 +6,8 @@ import {
   usePositions as usePositionsQuery,
   useClosePosition as useClosePositionMutation,
   useAccountData as useAccountDataQuery,
-  usePlaceOrder as usePlaceOrderMutation
+  usePlaceOrder as usePlaceOrderMutation,
+  useClosedPositions as useClosedPositionsQuery
 } from "./useMarketQueries";
 
 export function useMarketData() {
@@ -60,6 +61,17 @@ export function useAccountData(userAddress: string) {
 
   return {
     accountData: data || null,
+    loading: isLoading,
+    error: error?.message || null,
+    refetch: refetch
+  };
+}
+
+export function useClosedPositions() {
+  const { data, isLoading, error, refetch } = useClosedPositionsQuery();
+
+  return {
+    closedPositions: data || [],
     loading: isLoading,
     error: error?.message || null,
     refetch: refetch

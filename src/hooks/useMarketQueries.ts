@@ -22,8 +22,8 @@ export function useMarketData() {
       }
       throw new Error(response.error || "Failed to fetch market data");
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
     retry: 3
   });
 }
@@ -38,10 +38,10 @@ export function usePriceData() {
       }
       throw new Error(response.error || "Failed to fetch price data");
     },
-    staleTime: 30 * 1000, // 30 seconds
-    gcTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 30 * 1000,
+    gcTime: 2 * 60 * 1000,
     retry: 3,
-    refetchInterval: 5 * 1000 // Refetch every 5 seconds
+    refetchInterval: 5 * 1000
   });
 }
 
@@ -61,10 +61,10 @@ export function usePositions() {
 
       throw new Error(result.error || "Failed to fetch positions");
     },
-    staleTime: 5 * 1000, // 5 seconds
-    gcTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 5 * 1000,
+    gcTime: 2 * 60 * 1000,
     retry: 3,
-    refetchInterval: 10 * 1000 // Refetch every 10 seconds
+    refetchInterval: 10 * 1000
   });
 }
 
@@ -80,7 +80,6 @@ export function useClosePosition() {
         );
       }
 
-      // Close the position
       const result = await tradingService.closePosition(coin);
 
       if (!result.success) {
@@ -90,7 +89,6 @@ export function useClosePosition() {
       return { coin, message: `Position ${coin} closed successfully!` };
     },
     onSuccess: (data) => {
-      // Invalidate and refetch positions data
       queryClient.invalidateQueries({ queryKey: ["positions"] });
     },
     onError: (error) => {
@@ -109,10 +107,28 @@ export function useAccountData(userAddress: string) {
       }
       throw new Error(response.error || "Failed to fetch account data");
     },
-    staleTime: 10 * 1000, // 10 seconds
-    gcTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 10 * 1000,
+    gcTime: 2 * 60 * 1000,
     retry: 3,
-    refetchInterval: 30 * 1000 // Refetch every 30 seconds
+    refetchInterval: 30 * 1000
+  });
+}
+
+export function useClosedPositions() {
+  return useQuery({
+    queryKey: ["closedPositions"],
+    queryFn: async () => {
+      const result = await tradingService.getUserFills(USER_ADDRESS);
+
+      if (result.success && result.data) {
+        return result.data;
+      }
+
+      throw new Error(result.error || "Failed to fetch closed positions");
+    },
+    staleTime: 30 * 1000,
+    gcTime: 5 * 60 * 1000,
+    retry: 3
   });
 }
 
