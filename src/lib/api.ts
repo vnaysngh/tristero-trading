@@ -1,4 +1,3 @@
-import React from "react";
 import {
   MarketData,
   PriceData,
@@ -8,8 +7,7 @@ import {
   PortfolioData
 } from "@/types/trading";
 import { tradingService } from "./trading-service";
-
-const API_BASE_URL = "https://api.hyperliquid.xyz/info";
+import { API_BASE_URL, USER_ADDRESS } from "@/constants";
 
 async function makeRequest<T>(body: any): Promise<ApiResponse<T>> {
   try {
@@ -92,7 +90,7 @@ export function calculatePnL(
 export async function getPortfolioData(): Promise<ApiResponse<PortfolioData>> {
   const body = {
     type: "portfolio",
-    user: "0x32664952e3CE32189b193a4E4A918b460b271D61"
+    user: USER_ADDRESS
   };
 
   try {
@@ -143,7 +141,7 @@ export async function initializeTradingService(): Promise<{
   try {
     const config: TradingServiceConfig = {
       privateKey: process.env.NEXT_PUBLIC_PRIVATE_KEY || "",
-      userAddress: "0x32664952e3CE32189b193a4E4A918b460b271D61",
+      userAddress: "USER_ADDRESS",
       testnet: false,
       vaultAddress: undefined as string | undefined
     };

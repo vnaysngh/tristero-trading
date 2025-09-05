@@ -12,6 +12,7 @@ import {
 } from "@/lib/api";
 import { useAppState } from "@/state/store";
 import { tradingService } from "@/lib/trading-service";
+import { USER_ADDRESS } from "@/constants";
 
 export function useMarketData() {
   return useQuery({
@@ -67,9 +68,7 @@ export function usePositions() {
   return useQuery({
     queryKey: ["positions"],
     queryFn: async () => {
-      const result = await tradingService.getClearinghouseState(
-        "0x32664952e3CE32189b193a4E4A918b460b271D61"
-      );
+      const result = await tradingService.getClearinghouseState(USER_ADDRESS);
 
       if (result.success && result.data?.assetPositions) {
         // Filter out positions with zero size

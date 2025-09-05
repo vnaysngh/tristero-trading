@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { tradingService } from "@/lib/trading-service";
 import { formatPrice } from "@/lib/api";
+import { USER_ADDRESS } from "@/constants";
 
 export function TradeHistory() {
   const [closedPositions, setClosedPositions] = useState<any[]>([]);
@@ -14,7 +15,7 @@ export function TradeHistory() {
     try {
       const config = {
         privateKey: process.env.NEXT_PUBLIC_PRIVATE_KEY || "",
-        userAddress: "0x32664952e3CE32189b193a4E4A918b460b271D61",
+        userAddress: USER_ADDRESS,
         testnet: false,
         vaultAddress: undefined as string | undefined
       };
@@ -45,9 +46,7 @@ export function TradeHistory() {
 
     setLoadingClosedPositions(true);
     try {
-      const result = await tradingService.getUserFills(
-        "0x32664952e3CE32189b193a4E4A918b460b271D61"
-      );
+      const result = await tradingService.getUserFills(USER_ADDRESS);
       if (result.success) {
         setClosedPositions(result.data || []);
       } else {

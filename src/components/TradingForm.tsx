@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAppState } from "@/state/store";
 import { useAccountData, usePlaceOrder } from "@/hooks/useMarket";
+import { USER_ADDRESS } from "@/constants";
 
 export function MarketTradingForm() {
   const ticker = useAppState((s) => s.ticker);
@@ -20,7 +21,7 @@ export function MarketTradingForm() {
     loading: loadingBalance,
     error: accountError,
     refetch: refetchAccount
-  } = useAccountData("0x32664952e3CE32189b193a4E4A918b460b271D61");
+  } = useAccountData(USER_ADDRESS);
 
   const {
     placeOrder,
