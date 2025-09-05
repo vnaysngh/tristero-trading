@@ -8,7 +8,7 @@ import {
   PlaceOrderRequest
 } from "@/types/trading";
 import { tradingService } from "./trading-service";
-import { API_BASE_URL, USER_ADDRESS } from "@/constants";
+import { API_BASE_URL } from "@/constants";
 
 async function makeRequest<T>(body: any): Promise<ApiResponse<T>> {
   try {
@@ -72,7 +72,7 @@ export async function initializeTradingService(): Promise<{
   try {
     const config: TradingServiceConfig = {
       privateKey: process.env.NEXT_PUBLIC_PRIVATE_KEY || "",
-      userAddress: USER_ADDRESS,
+      userAddress: "",
       testnet: false,
       vaultAddress: undefined as string | undefined
     };

@@ -5,8 +5,10 @@ import { createJSONStorage, persist } from "zustand/middleware";
 interface AppState {
   ticker: string;
   prices: PriceData;
+  walletAddress: string;
   setTicker: (ticker: string) => void;
   setPrices: (batch: PriceData) => void;
+  setWalletAddress: (address: string) => void;
 }
 
 export const useAppState = create<AppState>()(
@@ -14,6 +16,7 @@ export const useAppState = create<AppState>()(
     (set, get) => ({
       ticker: "ETH",
       prices: {},
+      walletAddress: "",
       setTicker: (ticker: string) => set({ ticker: ticker }),
       setPrices: (batch: PriceData) => {
         const state = get();
@@ -39,7 +42,8 @@ export const useAppState = create<AppState>()(
         }
 
         set(() => ({ prices: next }));
-      }
+      },
+      setWalletAddress: (address: string) => set({ walletAddress: address })
     }),
     {
       name: "ticker",

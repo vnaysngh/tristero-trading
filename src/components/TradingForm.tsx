@@ -5,7 +5,6 @@ import { useAppState } from "@/state/store";
 import { useAccountData, usePlaceOrder } from "@/hooks/useMarket";
 import {
   leverage,
-  USER_ADDRESS,
   MIN_MARGIN_REQUIRED,
   VALIDATION_MESSAGES
 } from "@/constants";
@@ -29,6 +28,7 @@ import {
 
 export default function MarketTradingForm() {
   const ticker = useAppState((s) => s.ticker);
+  const walletAddress = useAppState((s) => s.walletAddress);
   const currentPrice = useAppState((s) => s.prices[ticker]);
 
   const [formData, setFormData] = useState<FormData>(() => ({
@@ -41,7 +41,7 @@ export default function MarketTradingForm() {
     loading: loadingBalance,
     error: accountError,
     refetch: refetchAccount
-  } = useAccountData(USER_ADDRESS);
+  } = useAccountData(walletAddress);
 
   const {
     placeOrder,
@@ -49,7 +49,7 @@ export default function MarketTradingForm() {
     orderError,
     orderSuccess,
     reset: resetOrder
-  } = usePlaceOrder();
+  } = usePlaceOrder(walletAddress);
 
   useEffect(() => {
     if (ticker && ticker !== formData.coin) {

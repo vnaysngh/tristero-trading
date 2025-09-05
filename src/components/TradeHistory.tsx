@@ -4,9 +4,12 @@ import { useClosedPositions } from "@/hooks/useMarket";
 import { formatPrice, formatTradeTime } from "@/utils";
 import { ProcessedPosition, RawFill } from "@/types/trading";
 import { TradeHistoryTable } from "./TradeHistoryTable";
+import { useAppState } from "@/state/store";
 
 export function TradeHistory() {
-  const { closedPositions, loading, error, refetch } = useClosedPositions();
+  const walletAddress = useAppState((s) => s.walletAddress);
+  const { closedPositions, loading, error, refetch } =
+    useClosedPositions(walletAddress);
 
   function processRawFill(fill: RawFill): ProcessedPosition {
     const price = parseFloat(fill.px);

@@ -32,8 +32,8 @@ export function usePriceData() {
   };
 }
 
-export function usePositions() {
-  const { data, isLoading, error, refetch } = usePositionsQuery();
+export function usePositions(walletAddress: string) {
+  const { data, isLoading, error, refetch } = usePositionsQuery(walletAddress);
 
   return {
     positions: data || [],
@@ -43,9 +43,9 @@ export function usePositions() {
   };
 }
 
-export function useClosePosition() {
+export function useClosePosition(walletAddress: string) {
   const { mutateAsync, isPending, error, isSuccess, reset } =
-    useClosePositionMutation();
+    useClosePositionMutation(walletAddress);
 
   return {
     closePosition: mutateAsync,
@@ -67,8 +67,9 @@ export function useAccountData(userAddress: string) {
   };
 }
 
-export function useClosedPositions() {
-  const { data, isLoading, error, refetch } = useClosedPositionsQuery();
+export function useClosedPositions(walletAddress: string) {
+  const { data, isLoading, error, refetch } =
+    useClosedPositionsQuery(walletAddress);
 
   return {
     closedPositions: data || [],
@@ -78,9 +79,9 @@ export function useClosedPositions() {
   };
 }
 
-export function usePlaceOrder() {
+export function usePlaceOrder(walletAddress: string) {
   const { mutateAsync, isPending, error, isSuccess, reset } =
-    usePlaceOrderMutation();
+    usePlaceOrderMutation(walletAddress);
 
   return {
     placeOrder: mutateAsync,

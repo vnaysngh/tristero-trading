@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePositions, useClosePosition } from "@/hooks/useMarket";
 import PositionsTable from "./PositionsTable";
 import { tableHeaders } from "@/constants";
+import { useAppState } from "@/state/store";
 
 const LoadingState = () => (
   <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -123,6 +124,7 @@ const TableHeader = () => (
 );
 
 export default function Positions() {
+  const walletAddress = useAppState((s) => s.walletAddress);
   const [closingPositions, setClosingPositions] = useState<Set<string>>(
     new Set()
   );
@@ -132,7 +134,7 @@ export default function Positions() {
     loading,
     error,
     refetch: refetchPositions
-  } = usePositions();
+  } = usePositions(walletAddress);
 
   const {
     closePosition,
@@ -140,7 +142,7 @@ export default function Positions() {
     closeError,
     closeSuccess,
     reset: resetCloseState
-  } = useClosePosition();
+  } = useClosePosition(walletAddress);
 
   if (loading) {
     return <LoadingState />;

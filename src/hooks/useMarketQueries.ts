@@ -9,7 +9,6 @@ import {
   placeOrder
 } from "@/lib/api";
 import { tradingService } from "@/lib/trading-service";
-import { USER_ADDRESS } from "@/constants";
 import { PlaceOrderRequest } from "@/types/trading";
 
 export function useMarketData() {
@@ -45,11 +44,11 @@ export function usePriceData() {
   });
 }
 
-export function usePositions() {
+export function usePositions(walletAddress: string) {
   return useQuery({
-    queryKey: ["positions"],
+    queryKey: ["positions", walletAddress],
     queryFn: async () => {
-      const result = await tradingService.getClearinghouseState(USER_ADDRESS);
+      const result = await tradingService.getClearinghouseState(walletAddress);
 
       if (result.success && result.data?.assetPositions) {
         // Filter out positions with zero size
@@ -61,6 +60,7 @@ export function usePositions() {
 
       throw new Error(result.error || "Failed to fetch positions");
     },
+    enabled: !!walletAddress && walletAddress.length > 0,
     staleTime: 5 * 1000,
     gcTime: 2 * 60 * 1000,
     retry: 3,
@@ -68,7 +68,7 @@ export function usePositions() {
   });
 }
 
-export function useClosePosition() {
+export function useClosePosition(walletAddress: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -89,7 +89,7 @@ export function useClosePosition() {
       return { coin, message: `Position ${coin} closed successfully!` };
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["positions"] });
+      queryClient.invalidateQueries({ queryKey: ["positions", walletAddress] });
     },
     onError: (error) => {
       console.error("Error closing position:", error);
@@ -107,6 +107,7 @@ export function useAccountData(userAddress: string) {
       }
       throw new Error(response.error || "Failed to fetch account data");
     },
+    enabled: !!userAddress && userAddress.length > 0,
     staleTime: 10 * 1000,
     gcTime: 2 * 60 * 1000,
     retry: 3,
@@ -114,11 +115,11 @@ export function useAccountData(userAddress: string) {
   });
 }
 
-export function useClosedPositions() {
+export function useClosedPositions(walletAddress: string) {
   return useQuery({
-    queryKey: ["closedPositions"],
+    queryKey: ["closedPositions", walletAddress],
     queryFn: async () => {
-      const result = await tradingService.getUserFills(USER_ADDRESS);
+      const result = await tradingService.getUserFills(walletAddress);
 
       if (result.success && result.data) {
         return result.data;
@@ -126,13 +127,14 @@ export function useClosedPositions() {
 
       throw new Error(result.error || "Failed to fetch closed positions");
     },
+    enabled: !!walletAddress && walletAddress.length > 0,
     staleTime: 30 * 1000,
     gcTime: 5 * 60 * 1000,
     retry: 3
   });
 }
 
-export function usePlaceOrder() {
+export function usePlaceOrder(walletAddress: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -146,9 +148,11 @@ export function usePlaceOrder() {
       return response.data;
     },
     onSuccess: (data) => {
-      // Invalidate and refetch account data and positions
-      queryClient.invalidateQueries({ queryKey: ["accountData"] });
-      queryClient.invalidateQueries({ queryKey: ["positions"] });
+      // Invalidate and refetch account data and positions for the current wallet
+      queryClient.invalidateQueries({
+        queryKey: ["accountData", walletAddress]
+      });
+      queryClient.invalidateQueries({ queryKey: ["positions", walletAddress] });
     },
     onError: (error) => {
       console.error("Error placing order:", error);

@@ -14,6 +14,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.86.0
         version: 5.86.0(react@19.1.0)
+      ethers:
+        specifier: ^6.15.0
+        version: 6.15.0
       hyperliquid:
         specifier: ^1.7.6
         version: 1.7.6

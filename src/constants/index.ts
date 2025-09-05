@@ -7,8 +7,6 @@ import {
 
 export const API_BASE_URL = "https://api.hyperliquid.xyz/info";
 
-export const USER_ADDRESS = "0x32664952e3CE32189b193a4E4A918b460b271D61";
-
 export const leverage = 2;
 
 export const MIN_MARGIN_REQUIRED = 10;
