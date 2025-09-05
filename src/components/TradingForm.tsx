@@ -7,6 +7,10 @@ import { leverage, USER_ADDRESS } from "@/constants";
 import SideButton from "./SideButton";
 import LeverageDisplay from "./LeverageDisplay";
 import StatusMessage from "./StatusMessage";
+import PositionSize from "./PositionSize";
+import Balances from "./Balances";
+import OrderDetails from "./OrderDetails";
+import SubmitButton from "./SubmitButton";
 
 export default function MarketTradingForm() {
   const ticker = useAppState((s) => s.ticker);
@@ -193,105 +197,20 @@ export default function MarketTradingForm() {
           <LeverageDisplay leverage={leverage} />
         </div>
 
-        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              Available to Trade
-            </span>
-            <div className="flex items-center space-x-2">
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {loadingBalance ? (
-                  <span className="animate-pulse">Loading...</span>
-                ) : (
-                  `$${accountValues.usdcBalance}`
-                )}
-              </span>
-              <button
-                type="button"
-                onClick={() => refetchAccount()}
-                disabled={loadingBalance}
-                className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 disabled:opacity-50"
-              >
-                {loadingBalance ? "..." : "↻"}
-              </button>
-            </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              Current Position
-            </span>
-            <span className="font-semibold text-gray-900 dark:text-white">
-              {loadingBalance ? (
-                <span className="animate-pulse">Loading...</span>
-              ) : (
-                `${accountValues.positionSize} ${formData.coin || "ETH"}`
-              )}
-            </span>
-          </div>
-        </div>
+        <Balances
+          loadingBalance={loadingBalance}
+          accountValues={accountValues}
+          refetchAccount={refetchAccount}
+          formData={formData}
+        />
 
-        <div>
-          <label
-            htmlFor="size"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >
-            Size
-          </label>
-          <div className="flex w-full">
-            <input
-              type="number"
-              id="size"
-              value={formData.size}
-              onChange={handleSizeChange}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white min-w-0"
-              placeholder="Enter size"
-              required
-            />
-            <div className="px-3 py-2 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-md bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white w-24 flex-shrink-0 flex items-center justify-center">
-              <span className="text-sm font-medium">
-                {formData.coin || "ETH"}
-              </span>
-            </div>
-          </div>
-        </div>
+        <PositionSize formData={formData} handleSizeChange={handleSizeChange} />
 
-        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600 dark:text-gray-400">
-              Order Value
-            </span>
-            <span className="text-gray-900 dark:text-white">
-              ${calculations.orderValue.toFixed(2)}
-            </span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600 dark:text-gray-400">
-              Margin Required
-            </span>
-            <span
-              className={`${
-                (!validation.hasEnoughMargin || !validation.hasMinimumMargin) &&
-                formData.size
-                  ? "text-red-600 dark:text-red-400"
-                  : "text-gray-900 dark:text-white"
-              }`}
-            >
-              ${calculations.marginRequired.toFixed(2)}
-              {!validation.hasEnoughMargin && formData.size && (
-                <span className="ml-1 text-xs">(Insufficient)</span>
-              )}
-              {!validation.hasMinimumMargin &&
-                formData.size &&
-                validation.hasEnoughMargin && (
-                  <span className="ml-1 text-xs">(Min $10)</span>
-                )}
-            </span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600 dark:text-gray-400">Leverage</span>
-            <span className="text-gray-900 dark:text-white">{leverage}x</span>
-          </div>
-        </div>
+        <OrderDetails
+          calculations={calculations}
+          validation={validation}
+          formData={formData}
+        />
 
         {(orderError || accountError) && (
           <StatusMessage
@@ -309,17 +228,11 @@ export default function MarketTradingForm() {
           />
         )}
 
-        <button
-          type="submit"
-          disabled={isPlacing || !validation.canSubmit}
-          className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
-            isPlacing || !validation.canSubmit
-              ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-              : "bg-green-600 hover:bg-green-700 text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-          }`}
-        >
-          {buttonText}
-        </button>
+        <SubmitButton
+          isPlacing={isPlacing}
+          validation={validation}
+          buttonText={buttonText}
+        />
       </form>
     </div>
   );
