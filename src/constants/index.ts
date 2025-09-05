@@ -4,6 +4,8 @@ export const USER_ADDRESS = "0x32664952e3CE32189b193a4E4A918b460b271D61";
 
 export const leverage = 2;
 
+export const MIN_MARGIN_REQUIRED = 10;
+
 export const tableHeaders = [
   {
     label: "Coin",

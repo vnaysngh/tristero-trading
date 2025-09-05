@@ -1,5 +1,5 @@
 import { useDebounce } from "@/hooks/useDebounce";
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useMarketData, usePriceData } from "@/hooks/useMarket";
 import { useAppState } from "@/state/store";
 import MarketDropdown from "./MarketDropdown";
@@ -24,7 +24,7 @@ const MarketSelect = ({
 
   const { markets, loading } = useMarketData();
 
-  const filteredMarkets = useMemo(() => {
+  const getFilteredMarkets = () => {
     if (!markets.length || !prices || loading || priceLoading) return [];
 
     return markets
@@ -37,7 +37,9 @@ const MarketSelect = ({
         const priceB = parseFloat(prices[b.name] || "0");
         return priceB - priceA;
       });
-  }, [markets, prices, debouncedSearchTerm, loading, priceLoading]);
+  };
+
+  const filteredMarkets = getFilteredMarkets();
 
   const intervals = [
     { value: "1h", label: "1 Hour" },

@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
-// import MillionLint from "@million/lint";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    reactCompiler: true
+  }
 };
 
-// export default MillionLint.next()(nextConfig);
 export default nextConfig;

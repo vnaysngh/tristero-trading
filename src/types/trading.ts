@@ -87,3 +87,43 @@ export interface PlaceOrderRequest {
   size: number;
   leverage: number;
 }
+
+export type OrderSide = "long" | "short";
+
+export interface FormData {
+  coin: string;
+  side: OrderSide;
+  size: string;
+  sizePercentage: number;
+}
+
+export interface OrderRequest {
+  coin: string;
+  side: OrderSide;
+  size: number;
+  leverage: number;
+}
+
+export interface CalculationResult {
+  orderValue: number;
+  marginRequired: number;
+}
+
+export interface AccountValues {
+  usdcBalance: string;
+  positionSize: string;
+}
+
+export interface ValidationResult {
+  hasEnoughMargin: boolean;
+  hasMinimumMargin: boolean;
+  isValidSize: boolean;
+  canSubmit: boolean;
+}
+
+export const INITIAL_FORM_DATA: FormData = {
+  coin: "",
+  side: "long",
+  size: "",
+  sizePercentage: 0
+};
