@@ -13,24 +13,17 @@ const MarketSelect = ({
   selectedInterval: string;
   setSelectedInterval: (interval: string) => void;
 }) => {
-  const setPrices = useAppState((s) => s.setPrices);
-  const setTicker = useAppState((s) => s.setTicker);
-  const ticker = useAppState((s) => s.ticker);
-
   const { loading: priceLoading, prices } = usePriceData();
 
   const [showAssetDropdown, setShowAssetDropdown] = useState(false);
   const [assetSearchTerm, setAssetSearchTerm] = useState("");
 
+  const setTicker = useAppState((s) => s.setTicker);
+  const ticker = useAppState((s) => s.ticker);
+
   const debouncedSearchTerm = useDebounce(assetSearchTerm, 300);
 
   const { markets, loading } = useMarketData();
-
-  useEffect(() => {
-    if (!prices) return;
-
-    setPrices(prices);
-  }, [prices]);
 
   const filteredMarkets = useMemo(() => {
     if (!markets.length || !prices || loading || priceLoading) return [];

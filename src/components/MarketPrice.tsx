@@ -4,7 +4,6 @@ import React from "react";
 
 const MarketPrice = ({ ticker }: { ticker: string }) => {
   const currentPrice = useAppState((s) => s.prices[ticker]);
-  console.log("logged how many times");
   return (
     <div className="text-lg font-bold text-cyan-500 dark:text-cyan-400">
       {currentPrice
