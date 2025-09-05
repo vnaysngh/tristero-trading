@@ -165,3 +165,27 @@ export const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   second: "2-digit",
   hour12: false
 };
+
+export interface TradingFormState {
+  formData: FormData;
+  calculations: CalculationResult;
+  accountValues: AccountValues;
+  validation: ValidationResult;
+  buttonText: string;
+}
+
+export type ValidationMessages = {
+  readonly PLACING: "Placing Order...";
+  readonly NOT_ENOUGH_MARGIN: "Not Enough Margin";
+  readonly MIN_MARGIN: "Min Margin $10";
+  readonly ENTER_SIZE: "Enter Size";
+  readonly PLACE_ORDER: "Place Order";
+};
+
+export const VALIDATION_MESSAGES: ValidationMessages = {
+  PLACING: "Placing Order...",
+  NOT_ENOUGH_MARGIN: "Not Enough Margin",
+  MIN_MARGIN: "Min Margin $10",
+  ENTER_SIZE: "Enter Size",
+  PLACE_ORDER: "Place Order"
+} as const;

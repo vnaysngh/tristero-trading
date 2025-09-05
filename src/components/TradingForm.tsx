@@ -18,7 +18,9 @@ import {
   AccountValues,
   ValidationResult,
   OrderSide,
-  OrderRequest
+  OrderRequest,
+  VALIDATION_MESSAGES,
+  TradingFormState
 } from "@/types/trading";
 
 export default function MarketTradingForm() {
@@ -56,7 +58,7 @@ export default function MarketTradingForm() {
     }
   }, [ticker, formData.coin]);
 
-  function getCalculationResult(): CalculationResult {
+  function calculateOrderValues(): CalculationResult {
     const sizeNum = parseFloat(formData.size);
     const priceNum = currentPrice ? parseFloat(currentPrice.toString()) : 0;
 
@@ -76,7 +78,7 @@ export default function MarketTradingForm() {
     return { orderValue, marginRequired };
   }
 
-  function getAccountValues(): AccountValues {
+  function extractAccountValues(): AccountValues {
     if (!accountData) {
       return { usdcBalance: "0.00", positionSize: "0.0000" };
     }
@@ -98,99 +100,151 @@ export default function MarketTradingForm() {
     return { usdcBalance, positionSize };
   }
 
-  function getValidationResult(
-    calculationResult: CalculationResult,
+  function validateOrder(
+    calculations: CalculationResult,
     accountValues: AccountValues
   ): ValidationResult {
     const usdcBalanceNum = parseFloat(accountValues.usdcBalance);
     const sizeNum = parseFloat(formData.size);
 
-    const hasEnoughMargin = calculationResult.marginRequired <= usdcBalanceNum;
-    const hasMinimumMargin =
-      calculationResult.marginRequired >= MIN_MARGIN_REQUIRED;
+    const hasEnoughMargin = calculations.marginRequired <= usdcBalanceNum;
+    const hasMinimumMargin = calculations.marginRequired >= MIN_MARGIN_REQUIRED;
     const isValidSize = !isNaN(sizeNum) && sizeNum > 0;
+    const hasSize = formData.size !== "";
 
     return {
       hasEnoughMargin,
       hasMinimumMargin,
       isValidSize,
-      canSubmit:
-        hasEnoughMargin &&
-        hasMinimumMargin &&
-        isValidSize &&
-        formData.size !== ""
+      canSubmit: hasEnoughMargin && hasMinimumMargin && isValidSize && hasSize
     };
   }
 
-  function getButtonText(validationResult: ValidationResult): string {
-    if (isPlacing) return "Placing Order...";
-    if (!validationResult.hasEnoughMargin) return "Not Enough Margin";
-    if (!validationResult.hasMinimumMargin) return "Min Margin $10";
-    if (!validationResult.isValidSize) return "Enter Size";
-    return "Place Order";
+  function determineButtonText(validation: ValidationResult): string {
+    if (isPlacing) return VALIDATION_MESSAGES.PLACING;
+    if (!validation.hasEnoughMargin)
+      return VALIDATION_MESSAGES.NOT_ENOUGH_MARGIN;
+    if (!validation.hasMinimumMargin) return VALIDATION_MESSAGES.MIN_MARGIN;
+    if (!validation.isValidSize) return VALIDATION_MESSAGES.ENTER_SIZE;
+    return VALIDATION_MESSAGES.PLACE_ORDER;
   }
 
-  const handleInputChange = (field: keyof FormData, value: string | number) => {
+  function computeAllValues(): TradingFormState {
+    const calculations = calculateOrderValues();
+    const accountValues = extractAccountValues();
+    const validation = validateOrder(calculations, accountValues);
+    const buttonText = determineButtonText(validation);
+
+    return {
+      formData,
+      calculations,
+      accountValues,
+      validation,
+      buttonText
+    };
+  }
+
+  function updateFormField(field: keyof FormData, value: string | number) {
     setFormData((prev) => ({ ...prev, [field]: value }));
     resetOrder();
-  };
+  }
 
-  const handleSideChange = (side: OrderSide) => {
-    handleInputChange("side", side);
-  };
+  function changeTradingSide(side: OrderSide) {
+    updateFormField("side", side);
+  }
 
-  const onClickLong = () => {
-    handleSideChange("long");
-  };
+  function handleLongClick() {
+    changeTradingSide("long");
+  }
 
-  const onClickShort = () => {
-    handleSideChange("short");
-  };
+  function handleShortClick() {
+    changeTradingSide("short");
+  }
 
-  const handleSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleInputChange("size", e.target.value);
-  };
+  function handleSizeInput(e: React.ChangeEvent<HTMLInputElement>) {
+    updateFormField("size", e.target.value);
+  }
 
-  const resetFormSize = () => {
+  function clearOrderSize() {
     setFormData((prev) => ({
       ...prev,
       size: "",
       sizePercentage: 0
     }));
-  };
+  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    resetOrder();
-
-    const calculationResult = getCalculationResult();
-    const accountValues = getAccountValues();
-    const validationResult = getValidationResult(
-      calculationResult,
-      accountValues
-    );
-
-    if (!validationResult.canSubmit || !formData.coin) return;
-
-    const orderRequest: OrderRequest = {
+  function createOrderRequest(): OrderRequest {
+    return {
       coin: formData.coin,
       side: formData.side,
       size: parseFloat(formData.size),
       leverage
     };
+  }
+
+  async function handleOrderSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    resetOrder();
+
+    const state = computeAllValues();
+
+    if (!state.validation.canSubmit || !formData.coin) {
+      return;
+    }
+
+    const orderRequest = createOrderRequest();
 
     placeOrder(orderRequest, {
-      onSuccess: resetFormSize
+      onSuccess: clearOrderSize
     });
-  };
+  }
 
-  const calculationResult = getCalculationResult();
-  const accountValues = getAccountValues();
-  const validationResult = getValidationResult(
-    calculationResult,
-    accountValues
-  );
-  const buttonText = getButtonText(validationResult);
+  function renderErrorMessage() {
+    if (!orderError && !accountError) return null;
+
+    return (
+      <StatusMessage
+        type="error"
+        message={orderError || accountError || ""}
+        onClose={resetOrder}
+      />
+    );
+  }
+
+  function renderSuccessMessage() {
+    if (!orderSuccess) return null;
+
+    return (
+      <StatusMessage
+        type="success"
+        message="Order placed successfully!"
+        onClose={resetOrder}
+      />
+    );
+  }
+
+  function renderTradingSideButtons() {
+    return (
+      <div className="flex space-x-4 mb-6">
+        <SideButton
+          side="long"
+          currentSide={formData.side}
+          label="Buy / Long"
+          onClick={handleLongClick}
+        />
+        <SideButton
+          side="short"
+          currentSide={formData.side}
+          label="Sell / Short"
+          onClick={handleShortClick}
+        />
+        <LeverageDisplay leverage={leverage} />
+      </div>
+    );
+  }
+
+  // Compute all state for render
+  const state = computeAllValues();
 
   return (
     <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
@@ -198,26 +252,12 @@ export default function MarketTradingForm() {
         Market Order
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex space-x-4 mb-6">
-          <SideButton
-            side="long"
-            currentSide={formData.side}
-            label="Buy / Long"
-            onClick={onClickLong}
-          />
-          <SideButton
-            side="short"
-            currentSide={formData.side}
-            label="Sell / Short"
-            onClick={onClickShort}
-          />
-          <LeverageDisplay leverage={leverage} />
-        </div>
+      <form onSubmit={handleOrderSubmit} className="space-y-4">
+        {renderTradingSideButtons()}
 
         <Balances
-          usdcBalance={accountValues.usdcBalance}
-          positionSize={accountValues.positionSize}
+          usdcBalance={state.accountValues.usdcBalance}
+          positionSize={state.accountValues.positionSize}
           loadingBalance={loadingBalance}
           refetchAccount={refetchAccount}
           coin={formData.coin}
@@ -226,37 +266,24 @@ export default function MarketTradingForm() {
         <PositionSize
           size={formData.size}
           coin={formData.coin}
-          handleSizeChange={handleSizeChange}
+          handleSizeChange={handleSizeInput}
         />
 
         <OrderDetails
-          orderValue={calculationResult.orderValue}
-          marginRequired={calculationResult.marginRequired}
-          hasMinimumMargin={validationResult.hasMinimumMargin}
-          hasEnoughMargin={validationResult.hasEnoughMargin}
+          orderValue={state.calculations.orderValue}
+          marginRequired={state.calculations.marginRequired}
+          hasMinimumMargin={state.validation.hasMinimumMargin}
+          hasEnoughMargin={state.validation.hasEnoughMargin}
           size={formData.size}
         />
 
-        {(orderError || accountError) && (
-          <StatusMessage
-            type="error"
-            message={orderError || accountError || ""}
-            onClose={resetOrder}
-          />
-        )}
-
-        {orderSuccess && (
-          <StatusMessage
-            type="success"
-            message="Order placed successfully!"
-            onClose={resetOrder}
-          />
-        )}
+        {renderErrorMessage()}
+        {renderSuccessMessage()}
 
         <SubmitButton
           isPlacing={isPlacing}
-          canSubmit={validationResult.canSubmit}
-          buttonText={buttonText}
+          canSubmit={state.validation.canSubmit}
+          buttonText={state.buttonText}
         />
       </form>
     </div>
