@@ -3,7 +3,9 @@
 import {
   useMarketData as useMarketDataQuery,
   usePriceData as usePriceDataQuery,
-  usePortfolioData as usePortfolioDataQuery
+  usePortfolioData as usePortfolioDataQuery,
+  usePositions as usePositionsQuery,
+  useClosePosition as useClosePositionMutation
 } from "./useMarketQueries";
 
 export function useMarketData() {
@@ -36,6 +38,29 @@ export function usePortfolioData() {
     loading: query.isLoading,
     error: query.error?.message || null,
     refetch: query.refetch
+  };
+}
+
+export function usePositions() {
+  const query = usePositionsQuery();
+
+  return {
+    positions: query.data || [],
+    loading: query.isLoading,
+    error: query.error?.message || null,
+    refetch: query.refetch
+  };
+}
+
+export function useClosePosition() {
+  const mutation = useClosePositionMutation();
+
+  return {
+    closePosition: mutation.mutateAsync,
+    isClosing: mutation.isPending,
+    closeError: mutation.error?.message || null,
+    closeSuccess: mutation.isSuccess,
+    reset: mutation.reset
   };
 }
 

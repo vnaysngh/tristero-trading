@@ -1,8 +1,14 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { getMarketData, getAllPrices, getPortfolioData } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  getMarketData,
+  getAllPrices,
+  getPortfolioData,
+  initializeTradingService
+} from "@/lib/api";
 import { useAppState } from "@/state/store";
+import { tradingService } from "@/lib/trading-service";
 
 export function useMarketData() {
   return useQuery({
@@ -51,5 +57,61 @@ export function usePortfolioData() {
     gcTime: 2 * 60 * 1000, // 2 minutes
     retry: 3,
     refetchInterval: 10 * 1000 // Refetch every 10 seconds
+  });
+}
+
+export function usePositions() {
+  return useQuery({
+    queryKey: ["positions"],
+    queryFn: async () => {
+      const result = await tradingService.getClearinghouseState(
+        "0x32664952e3CE32189b193a4E4A918b460b271D61"
+      );
+
+      if (result.success && result.data?.assetPositions) {
+        // Filter out positions with zero size
+        const activePositions = result.data.assetPositions.filter(
+          (pos: any) => parseFloat(pos.position.szi || "0") !== 0
+        );
+        return activePositions;
+      }
+
+      throw new Error(result.error || "Failed to fetch positions");
+    },
+    staleTime: 5 * 1000, // 5 seconds
+    gcTime: 2 * 60 * 1000, // 2 minutes
+    retry: 3,
+    refetchInterval: 10 * 1000 // Refetch every 10 seconds
+  });
+}
+
+export function useClosePosition() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (coin: string) => {
+      const initResult = await initializeTradingService();
+      if (!initResult.success) {
+        throw new Error(
+          initResult.error || "Failed to initialize trading service"
+        );
+      }
+
+      // Close the position
+      const result = await tradingService.closePosition(coin);
+
+      if (!result.success) {
+        throw new Error(result.error || `Failed to close position ${coin}`);
+      }
+
+      return { coin, message: `Position ${coin} closed successfully!` };
+    },
+    onSuccess: (data) => {
+      // Invalidate and refetch positions data
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+    },
+    onError: (error) => {
+      console.error("Error closing position:", error);
+    }
   });
 }

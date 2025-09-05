@@ -1,3 +1,5 @@
+import { formatPrice } from "@/lib/api";
+import { useAppState } from "@/state/store";
 import React from "react";
 
 const PositionsTable = ({
@@ -9,6 +11,26 @@ const PositionsTable = ({
   closingPositions: any;
   handleClosePosition: (coin: string) => void;
 }) => {
+  const currentPrice = useAppState((s) => s.prices[position.coin]);
+
+  const size = parseFloat(position.szi || "0");
+
+  const priceDifference =
+    size >= 0
+      ? parseFloat(currentPrice) - position.entryPx
+      : position.entryPx - parseFloat(currentPrice);
+  const pnl = Math.abs(size) * priceDifference;
+  const pnlComp =
+    Math.abs(size) * priceDifference
+      ? `+$${formatPrice(pnl.toString())}`
+      : `-$${formatPrice(Math.abs(pnl).toString())}`;
+  const marginUsed = parseFloat(position.marginUsed || "0");
+
+  const roe = marginUsed > 0 ? (pnl / marginUsed) * 100 : 0; // ROE = PnL / margin_used * 100
+  const roeComp =
+    roe >= 0
+      ? `+${formatPrice(roe.toString())}%`
+      : `${formatPrice(roe.toString())}%`;
   return (
     <tr
       key={position.coin}
@@ -18,51 +40,51 @@ const PositionsTable = ({
         <div className="flex items-center space-x-3">
           <div className="w-1 h-8 bg-green-500 rounded-full"></div>
           <div className="font-semibold text-gray-900 dark:text-white">
-            {position.coin}
+            {position.coin} {position.leverage?.value || 1}x
           </div>
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-        {position.size}
+        {position.szi || 0}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-        {position.positionValue}
+        {position.positionValue || 0}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-        {position.entryPrice}
+        {position.entryPx || "N/A"}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-        {position.markPrice}
+        {currentPrice}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center space-x-2">
           <div className="text-sm">
             <div
               className={`font-semibold ${
-                position.pnl.startsWith("+")
+                pnl > 0
                   ? "text-green-600 dark:text-green-400"
                   : "text-red-600 dark:text-red-400"
               }`}
             >
-              {position.pnl} ({position.roe})
+              {pnlComp} ({roeComp})
             </div>
           </div>
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-        {position.liqPrice}
+        {position.liquidationPx}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center space-x-2">
           <span className="text-sm text-gray-900 dark:text-white">
-            {position.margin}
+            {position.marginUsed}
           </span>
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex space-x-2">
           <button
-            onClick={() => handleClosePosition(position.originalCoin)}
+            onClick={() => handleClosePosition(`${position.coin}-PERP`)}
             disabled={closingPositions.has(position.coin)}
             className={`text-sm font-medium transition-colors cursor-pointer ${
               closingPositions.has(position.coin)

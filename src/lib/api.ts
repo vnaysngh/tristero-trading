@@ -1,3 +1,4 @@
+import React from "react";
 import {
   MarketData,
   PriceData,
@@ -6,6 +7,7 @@ import {
   HyperliquidMetaResponse,
   PortfolioData
 } from "@/types/trading";
+import { tradingService } from "./trading-service";
 
 const API_BASE_URL = "https://api.hyperliquid.xyz/info";
 
@@ -120,3 +122,112 @@ export async function getPortfolioData(): Promise<ApiResponse<PortfolioData>> {
     };
   }
 }
+
+export interface TradingServiceConfig {
+  privateKey: string;
+  userAddress: string;
+  testnet?: boolean;
+  vaultAddress?: string;
+}
+
+export interface ClosePositionResult {
+  success: boolean;
+  error?: string;
+  message?: string;
+}
+
+export async function initializeTradingService(): Promise<{
+  success: boolean;
+  error?: string;
+}> {
+  try {
+    const config: TradingServiceConfig = {
+      privateKey: process.env.NEXT_PUBLIC_PRIVATE_KEY || "",
+      userAddress: "0x32664952e3CE32189b193a4E4A918b460b271D61",
+      testnet: false,
+      vaultAddress: undefined as string | undefined
+    };
+
+    if (!config.privateKey) {
+      return {
+        success: false,
+        error: "Please configure your private key in environment variables"
+      };
+    }
+
+    await tradingService.initialize(config);
+    return { success: true };
+  } catch (err) {
+    return {
+      success: false,
+      error:
+        err instanceof Error
+          ? err.message
+          : "Failed to initialize trading service"
+    };
+  }
+}
+
+/* export async function handleClosePosition(
+  coin: string,
+  isTradingServiceInitialized: boolean,
+  setCloseError: (error: string | null) => void,
+  setCloseSuccess: (success: string | null) => void,
+  setClosingPositions: React.Dispatch<React.SetStateAction<Set<string>>>,
+  setIsTradingServiceInitialized: (initialized: boolean) => void,
+  refetchPositions: () => Promise<any>
+): Promise<ClosePositionResult> {
+  setCloseError(null);
+  setCloseSuccess(null);
+  setClosingPositions((prev) => new Set(prev).add(coin));
+
+  try {
+    let initialized = isTradingServiceInitialized;
+
+    if (!initialized) {
+      const initResult = await initializeTradingService();
+      if (!initResult.success) {
+        setCloseError(
+          initResult.error || "Failed to initialize trading service"
+        );
+        return { success: false, error: initResult.error };
+      }
+      initialized = true;
+      setIsTradingServiceInitialized(true);
+    }
+
+    const result = await tradingService.closePosition(coin);
+
+    if (result.success) {
+      setCloseSuccess(`Position ${coin} closed successfully!`);
+      await refetchPositions();
+      return {
+        success: true,
+        message: `Position ${coin} closed successfully!`
+      };
+    } else {
+      const errorMsg = result.error || `Failed to close position ${coin}`;
+      setCloseError(errorMsg);
+      return { success: false, error: errorMsg };
+    }
+  } catch (err) {
+    let errorMessage: string;
+
+    if (err instanceof Error && err.message.includes("not initialized")) {
+      errorMessage =
+        "Trading service not initialized. Please configure your private key in environment variables.";
+    } else {
+      errorMessage =
+        err instanceof Error ? err.message : "An unexpected error occurred";
+    }
+
+    setCloseError(errorMessage);
+    return { success: false, error: errorMessage };
+  } finally {
+    setClosingPositions((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(coin);
+      return newSet;
+    });
+  }
+} */
