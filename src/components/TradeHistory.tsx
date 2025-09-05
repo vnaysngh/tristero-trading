@@ -8,42 +8,8 @@ import { formatPrice } from "@/utils";
 export function TradeHistory() {
   const [closedPositions, setClosedPositions] = useState<any[]>([]);
   const [loadingClosedPositions, setLoadingClosedPositions] = useState(false);
-  const [isTradingServiceInitialized, setIsTradingServiceInitialized] =
-    useState(false);
-
-  const initializeTradingService = async () => {
-    try {
-      const config = {
-        privateKey: process.env.NEXT_PUBLIC_PRIVATE_KEY || "",
-        userAddress: USER_ADDRESS,
-        testnet: false,
-        vaultAddress: undefined as string | undefined
-      };
-
-      if (!config.privateKey) {
-        console.error(
-          "Please configure your private key in environment variables"
-        );
-        return false;
-      }
-
-      await tradingService.initialize(config);
-      setIsTradingServiceInitialized(true);
-      return true;
-    } catch (err) {
-      console.error("Failed to initialize trading service:", err);
-      return false;
-    }
-  };
 
   const fetchClosedPositions = async () => {
-    if (!isTradingServiceInitialized) {
-      const initialized = await initializeTradingService();
-      if (!initialized) {
-        return;
-      }
-    }
-
     setLoadingClosedPositions(true);
     try {
       const result = await tradingService.getUserFills(USER_ADDRESS);

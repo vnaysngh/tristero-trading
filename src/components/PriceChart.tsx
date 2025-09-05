@@ -113,7 +113,11 @@ function CandlestickChart({ data }: { data: CandleData }) {
 }
 
 // Main chart component
-export function PriceChart({ selectedInterval }: { selectedInterval: string }) {
+export default function PriceChart({
+  selectedInterval
+}: {
+  selectedInterval: string;
+}) {
   const [chartData, setChartData] = useState<CandleData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

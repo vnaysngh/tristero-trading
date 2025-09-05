@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { PriceChart } from "@/components/PriceChart";
-import { MarketTradingForm } from "@/components/TradingForm";
-import { useMarketData } from "@/hooks/useMarket";
+import PriceChart from "@/components/PriceChart";
+import MarketTradingForm from "@/components/TradingForm";
 import MarketSelect from "@/components/MarketSelect";
 import { MarketInfo } from "./MarketInfo";
 
