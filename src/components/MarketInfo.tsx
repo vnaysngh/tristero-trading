@@ -1,16 +1,13 @@
 import React from "react";
 import { MarketData } from "@/types/trading";
 import { formatPrice } from "@/lib/api";
+import { useAppState } from "@/state/store";
+import { useMarketData } from "@/hooks/useMarket";
 
-export const MarketInfo = ({
-  market,
-  selectedSymbol,
-  currentPrice
-}: {
-  market: MarketData | undefined;
-  selectedSymbol: string;
-  currentPrice: string;
-}) => {
+export const MarketInfo = ({ selectedSymbol }: { selectedSymbol: string }) => {
+  const { markets } = useMarketData();
+  const market = markets.find((m) => m.name === selectedSymbol);
+  const currentPrice = useAppState((s) => s.prices[selectedSymbol]);
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">

@@ -1,24 +1,25 @@
 import { useDebounce } from "@/hooks/useDebounce";
 import React, { useMemo, useState, useEffect } from "react";
-import { PriceData } from "@/types/trading";
 import { formatPrice } from "@/lib/api";
-import { useMarketData } from "@/hooks/useMarket";
+import { useMarketData, usePriceData } from "@/hooks/useMarket";
+import { useAppState } from "@/state/store";
+import MarketDropdown from "./MarketDropdown";
+import MarketPrice from "./MarketPrice";
 
 const MarketSelect = ({
   selectedSymbol,
   setSelectedSymbol,
   selectedInterval,
-  setSelectedInterval,
-  prices,
-  currentPrice
+  setSelectedInterval
 }: {
   selectedSymbol: string;
   setSelectedSymbol: (symbol: string) => void;
   selectedInterval: string;
   setSelectedInterval: (interval: string) => void;
-  prices: PriceData;
-  currentPrice: string;
 }) => {
+  const setPrices = useAppState((s) => s.setPrices);
+  const { loading: priceLoading, prices } = usePriceData();
+
   const [showAssetDropdown, setShowAssetDropdown] = useState(false);
   const [assetSearchTerm, setAssetSearchTerm] = useState("");
 
@@ -26,8 +27,14 @@ const MarketSelect = ({
 
   const { markets, loading } = useMarketData();
 
+  useEffect(() => {
+    if (!prices) return;
+
+    setPrices(prices);
+  }, [prices]);
+
   const filteredMarkets = useMemo(() => {
-    if (!markets.length || !prices || loading) return [];
+    if (!markets.length || !prices || loading || priceLoading) return [];
 
     return markets
       .filter((market) => prices[market.name])
@@ -39,7 +46,7 @@ const MarketSelect = ({
         const priceB = parseFloat(prices[b.name] || "0");
         return priceB - priceA;
       });
-  }, [markets, prices, debouncedSearchTerm, loading]);
+  }, [markets, prices, debouncedSearchTerm, loading, priceLoading]);
 
   const intervals = [
     { value: "1h", label: "1 Hour" },
@@ -66,6 +73,7 @@ const MarketSelect = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showAssetDropdown]);
+
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center space-x-4">
@@ -123,7 +131,7 @@ const MarketSelect = ({
               </div>
 
               <div className="max-h-60 overflow-y-auto">
-                {loading ? (
+                {loading || priceLoading ? (
                   <div className="p-4 text-center text-gray-400">
                     Loading markets...
                   </div>
@@ -133,29 +141,12 @@ const MarketSelect = ({
                   </div>
                 ) : (
                   filteredMarkets.map((market) => (
-                    <button
+                    <MarketDropdown
                       key={market.name}
-                      onClick={() => handleAssetSelect(market.name)}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                        market.name === selectedSymbol
-                          ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                          : "text-gray-900 dark:text-white"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                            {market.name.charAt(0)}
-                          </div>
-                          <span className="font-medium">{market.name}</span>
-                        </div>
-                        {prices?.[market.name] && (
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
-                            ${formatPrice(prices[market.name])}
-                          </span>
-                        )}
-                      </div>
-                    </button>
+                      market={market}
+                      handleAssetSelect={handleAssetSelect}
+                      selectedSymbol={selectedSymbol}
+                    />
                   ))
                 )}
               </div>
@@ -164,11 +155,7 @@ const MarketSelect = ({
         </div>
 
         <div className="text-right">
-          <div className="text-lg font-bold text-cyan-500 dark:text-cyan-400">
-            {currentPrice
-              ? `$${formatPrice(parseFloat(currentPrice))}`
-              : "Loading..."}
-          </div>
+          <MarketPrice selectedSymbol={selectedSymbol} />
         </div>
       </div>
 

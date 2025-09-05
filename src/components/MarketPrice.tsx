@@ -1,0 +1,17 @@
+import { formatPrice } from "@/lib/api";
+import { useAppState } from "@/state/store";
+import React from "react";
+
+const MarketPrice = ({ selectedSymbol }: { selectedSymbol: string }) => {
+  const currentPrice = useAppState((s) => s.prices[selectedSymbol]);
+  console.log("logged how many times");
+  return (
+    <div className="text-lg font-bold text-cyan-500 dark:text-cyan-400">
+      {currentPrice
+        ? `$${formatPrice(parseFloat(currentPrice))}`
+        : "Loading..."}
+    </div>
+  );
+};
+
+export default MarketPrice;

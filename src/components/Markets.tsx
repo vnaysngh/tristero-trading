@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { PriceChart } from "@/components/PriceChart";
 import { MarketTradingForm } from "@/components/TradingForm";
-import { useMarketData, usePriceData } from "@/hooks/useMarket";
+import { useMarketData } from "@/hooks/useMarket";
 import MarketSelect from "@/components/MarketSelect";
 import { MarketInfo } from "./MarketInfo";
 
@@ -12,11 +12,6 @@ export const dynamic = "force-dynamic";
 export default function Home() {
   const [selectedSymbol, setSelectedSymbol] = useState("ETH");
   const [selectedInterval, setSelectedInterval] = useState("1h");
-
-  const { prices } = usePriceData();
-  const { markets } = useMarketData();
-  const market = markets.find((m) => m.name === selectedSymbol);
-  const currentPrice = prices[selectedSymbol];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -29,26 +24,17 @@ export default function Home() {
                 setSelectedSymbol={setSelectedSymbol}
                 selectedInterval={selectedInterval}
                 setSelectedInterval={setSelectedInterval}
-                prices={prices}
-                currentPrice={currentPrice}
               />
               <PriceChart
                 selectedSymbol={selectedSymbol}
                 selectedInterval={selectedInterval}
               />
             </div>
-            <MarketInfo
-              market={market}
-              selectedSymbol={selectedSymbol}
-              currentPrice={currentPrice}
-            />
+            <MarketInfo selectedSymbol={selectedSymbol} />
           </div>
 
           <div className="space-y-6">
-            <MarketTradingForm
-              selectedSymbol={selectedSymbol}
-              currentPrice={currentPrice}
-            />
+            <MarketTradingForm selectedSymbol={selectedSymbol} />
           </div>
         </div>
       </main>

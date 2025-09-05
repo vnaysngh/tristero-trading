@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getMarketData, getAllPrices, getPortfolioData } from "@/lib/api";
+import { useAppState } from "@/state/store";
 
 export function useMarketData() {
   return useQuery({
