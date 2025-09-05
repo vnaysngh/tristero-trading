@@ -9,6 +9,16 @@ export interface MarketData {
   isDelisted?: boolean;
 }
 
+export interface MarketSelectProps {
+  selectedInterval: string;
+  setSelectedInterval: (interval: string) => void;
+}
+
+export interface Interval {
+  value: string;
+  label: string;
+}
+
 export interface HyperliquidMetaResponse {
   universe: MarketData[];
   marginTables: any[];
@@ -53,6 +63,24 @@ export interface ApiResponse<T> {
   success: boolean;
   data?: T;
   error?: string;
+}
+
+export interface PositionTable {
+  coin: string;
+  szi?: string;
+  positionValue?: string;
+  entryPx: number;
+  liquidationPx?: string;
+  marginUsed?: string;
+  leverage?: {
+    value: number;
+  };
+}
+
+export interface PositionsTableProps {
+  position: PositionTable;
+  closingPositions: Set<string>;
+  handleClosePosition: (coin: string) => void;
 }
 
 export interface TradingServiceConfig {

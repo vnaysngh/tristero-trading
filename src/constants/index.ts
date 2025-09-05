@@ -1,6 +1,7 @@
 import {
   ChartDimensions,
   ChartState,
+  Interval,
   ValidationMessages
 } from "@/types/trading";
 
@@ -45,6 +46,13 @@ export const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   second: "2-digit",
   hour12: false
 };
+
+export const INTERVALS: Interval[] = [
+  { value: "1h", label: "1 Hour" },
+  { value: "4h", label: "4 Hours" },
+  { value: "1d", label: "1 Day" },
+  { value: "1w", label: "1 Week" }
+];
 
 export const tableHeaders = [
   {
