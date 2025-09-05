@@ -68,10 +68,22 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
-export interface PortfolioHistory {
-  accountValueHistory: [number, string][];
-  pnlHistory: [number, string][];
-  vlm: string;
+export interface TradingServiceConfig {
+  privateKey: string;
+  userAddress: string;
+  testnet?: boolean;
+  vaultAddress?: string;
 }
 
-export type PortfolioData = [string, PortfolioHistory][];
+export interface ClosePositionResult {
+  success: boolean;
+  error?: string;
+  message?: string;
+}
+
+export interface PlaceOrderRequest {
+  coin: string;
+  side: "long" | "short";
+  size: number;
+  leverage: number;
+}

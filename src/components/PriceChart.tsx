@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getPriceHistory, formatPrice } from "@/lib/api";
+import { getPriceHistory } from "@/lib/api";
 import { CandleData } from "@/types/trading";
 import { useAppState } from "@/state/store";
+import { formatPrice } from "@/utils";
 
 function ChartSkeleton() {
   return (

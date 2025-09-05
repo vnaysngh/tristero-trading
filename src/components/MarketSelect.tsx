@@ -1,6 +1,5 @@
 import { useDebounce } from "@/hooks/useDebounce";
 import React, { useMemo, useState, useEffect } from "react";
-import { formatPrice } from "@/lib/api";
 import { useMarketData, usePriceData } from "@/hooks/useMarket";
 import { useAppState } from "@/state/store";
 import MarketDropdown from "./MarketDropdown";

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { tradingService } from "@/lib/trading-service";
-import { formatPrice } from "@/lib/api";
 import { USER_ADDRESS } from "@/constants";
+import { formatPrice } from "@/utils";
 
 export function TradeHistory() {
   const [closedPositions, setClosedPositions] = useState<any[]>([]);

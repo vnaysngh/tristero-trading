@@ -3,7 +3,6 @@
 import {
   useMarketData as useMarketDataQuery,
   usePriceData as usePriceDataQuery,
-  usePortfolioData as usePortfolioDataQuery,
   usePositions as usePositionsQuery,
   useClosePosition as useClosePositionMutation,
   useAccountData as useAccountDataQuery,
@@ -26,17 +25,6 @@ export function usePriceData() {
 
   return {
     prices: data || {},
-    loading: isLoading,
-    error: error?.message || null,
-    refetch: refetch
-  };
-}
-
-export function usePortfolioData() {
-  const { data, isLoading, error, refetch } = usePortfolioDataQuery();
-
-  return {
-    portfolio: data || [],
     loading: isLoading,
     error: error?.message || null,
     refetch: refetch

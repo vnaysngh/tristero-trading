@@ -1,8 +1,7 @@
 import React from "react";
-import { MarketData } from "@/types/trading";
-import { formatPrice } from "@/lib/api";
 import { useAppState } from "@/state/store";
 import { useMarketData } from "@/hooks/useMarket";
+import { formatPrice } from "@/utils";
 
 export const MarketInfo = () => {
   const { markets } = useMarketData();

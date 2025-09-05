@@ -108,29 +108,6 @@ class TradingService {
     }
   }
 
-  async getAccountInfo(): Promise<TradingResult> {
-    if (!this.sdk) {
-      throw new Error("Trading service not initialized");
-    }
-
-    try {
-      const state = await this.sdk.info.perpetuals.getClearinghouseState(
-        this.config!.userAddress
-      );
-
-      return {
-        success: true,
-        data: state
-      };
-    } catch (error) {
-      console.error("Error getting account info:", error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error occurred"
-      };
-    }
-  }
-
   async getClearinghouseState(userAddress: string): Promise<TradingResult> {
     try {
       const response = await fetch("https://api.hyperliquid.xyz/info", {

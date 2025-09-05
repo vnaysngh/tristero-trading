@@ -4,7 +4,8 @@ import {
   CandleData,
   ApiResponse,
   HyperliquidMetaResponse,
-  PortfolioData
+  TradingServiceConfig,
+  PlaceOrderRequest
 } from "@/types/trading";
 import { tradingService } from "./trading-service";
 import { API_BASE_URL, USER_ADDRESS } from "@/constants";
@@ -64,76 +65,6 @@ export async function getPriceHistory(
   return makeRequest<CandleData>({ type: "candleSnapshot", req });
 }
 
-export function formatPrice(
-  price: string | number,
-  decimals: number = 2
-): string {
-  const num = typeof price === "string" ? parseFloat(price) : price;
-  return num.toFixed(decimals);
-}
-
-export function calculatePnL(
-  entryPrice: number,
-  currentPrice: number,
-  size: number,
-  side: "long" | "short"
-): { pnl: number; pnlPercentage: number } {
-  const priceDiff =
-    side === "long" ? currentPrice - entryPrice : entryPrice - currentPrice;
-
-  const pnl = priceDiff * size;
-  const pnlPercentage = (pnl / (entryPrice * size)) * 100;
-
-  return { pnl, pnlPercentage };
-}
-
-export async function getPortfolioData(): Promise<ApiResponse<PortfolioData>> {
-  const body = {
-    type: "portfolio",
-    user: USER_ADDRESS
-  };
-
-  try {
-    const response = await fetch(API_BASE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body),
-      cache: "no-store"
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return { success: true, data };
-  } catch (error) {
-    console.error("Portfolio API request failed:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch portfolio data"
-    };
-  }
-}
-
-export interface TradingServiceConfig {
-  privateKey: string;
-  userAddress: string;
-  testnet?: boolean;
-  vaultAddress?: string;
-}
-
-export interface ClosePositionResult {
-  success: boolean;
-  error?: string;
-  message?: string;
-}
-
 export async function initializeTradingService(): Promise<{
   success: boolean;
   error?: string;
@@ -141,7 +72,7 @@ export async function initializeTradingService(): Promise<{
   try {
     const config: TradingServiceConfig = {
       privateKey: process.env.NEXT_PUBLIC_PRIVATE_KEY || "",
-      userAddress: "USER_ADDRESS",
+      userAddress: USER_ADDRESS,
       testnet: false,
       vaultAddress: undefined as string | undefined
     };
@@ -190,26 +121,10 @@ export async function getAccountData(
   }
 }
 
-export interface PlaceOrderRequest {
-  coin: string;
-  side: "long" | "short";
-  size: number;
-  leverage: number;
-}
-
 export async function placeOrder(
   request: PlaceOrderRequest
 ): Promise<ApiResponse<any>> {
   try {
-    // Initialize trading service if needed
-    const initResult = await initializeTradingService();
-    if (!initResult.success) {
-      return {
-        success: false,
-        error: initResult.error || "Failed to initialize trading service"
-      };
-    }
-
     // Update leverage
     await tradingService.updateLeverage(
       `${request.coin}-PERP`,

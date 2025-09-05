@@ -1,5 +1,5 @@
-import { formatPrice } from "@/lib/api";
 import { useAppState } from "@/state/store";
+import { formatPrice } from "@/utils";
 import React from "react";
 
 const PositionsTable = ({

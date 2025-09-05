@@ -4,15 +4,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getMarketData,
   getAllPrices,
-  getPortfolioData,
   initializeTradingService,
   getAccountData,
-  placeOrder,
-  PlaceOrderRequest
+  placeOrder
 } from "@/lib/api";
-import { useAppState } from "@/state/store";
 import { tradingService } from "@/lib/trading-service";
 import { USER_ADDRESS } from "@/constants";
+import { PlaceOrderRequest } from "@/types/trading";
 
 export function useMarketData() {
   return useQuery({
@@ -44,23 +42,6 @@ export function usePriceData() {
     gcTime: 2 * 60 * 1000, // 2 minutes
     retry: 3,
     refetchInterval: 5 * 1000 // Refetch every 5 seconds
-  });
-}
-
-export function usePortfolioData() {
-  return useQuery({
-    queryKey: ["portfolio"],
-    queryFn: async () => {
-      const response = await getPortfolioData();
-      if (response.success && response.data) {
-        return response.data;
-      }
-      throw new Error(response.error || "Failed to fetch portfolio data");
-    },
-    staleTime: 10 * 1000, // 10 seconds
-    gcTime: 2 * 60 * 1000, // 2 minutes
-    retry: 3,
-    refetchInterval: 10 * 1000 // Refetch every 10 seconds
   });
 }
 
