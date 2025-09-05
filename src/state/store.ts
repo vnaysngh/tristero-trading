@@ -2,12 +2,16 @@ import { PriceData } from "@/types/trading";
 import { create } from "zustand";
 
 interface AppState {
+  ticker: string;
   prices: PriceData;
+  setTicker: (ticker: string) => void;
   setPrices: (batch: PriceData) => void;
 }
 
 export const useAppState = create<AppState>((set, get) => ({
+  ticker: "ETH",
   prices: {},
+  setTicker: (ticker: string) => set({ ticker: ticker }),
   setPrices: (batch: PriceData) => {
     const state = get();
 

@@ -6,11 +6,11 @@ import { MarketData } from "@/types/trading";
 const MarketDropdown = ({
   market,
   handleAssetSelect,
-  selectedSymbol
+  ticker
 }: {
   market: MarketData;
   handleAssetSelect: (symbol: string) => void;
-  selectedSymbol: string;
+  ticker: string;
 }) => {
   const currentPrice = useAppState((s) => s.prices[market.name]);
   console.log("should not render");
@@ -19,7 +19,7 @@ const MarketDropdown = ({
       key={market.name}
       onClick={() => handleAssetSelect(market.name)}
       className={`w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-        market.name === selectedSymbol
+        market.name === ticker
           ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
           : "text-gray-900 dark:text-white"
       }`}

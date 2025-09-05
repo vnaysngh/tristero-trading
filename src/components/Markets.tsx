@@ -10,7 +10,6 @@ import { MarketInfo } from "./MarketInfo";
 export const dynamic = "force-dynamic";
 
 export default function Home() {
-  const [selectedSymbol, setSelectedSymbol] = useState("ETH");
   const [selectedInterval, setSelectedInterval] = useState("1h");
 
   return (
@@ -20,21 +19,16 @@ export default function Home() {
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
               <MarketSelect
-                selectedSymbol={selectedSymbol}
-                setSelectedSymbol={setSelectedSymbol}
                 selectedInterval={selectedInterval}
                 setSelectedInterval={setSelectedInterval}
               />
-              <PriceChart
-                selectedSymbol={selectedSymbol}
-                selectedInterval={selectedInterval}
-              />
+              <PriceChart selectedInterval={selectedInterval} />
             </div>
-            <MarketInfo selectedSymbol={selectedSymbol} />
+            <MarketInfo />
           </div>
 
           <div className="space-y-6">
-            <MarketTradingForm selectedSymbol={selectedSymbol} />
+            <MarketTradingForm />
           </div>
         </div>
       </main>

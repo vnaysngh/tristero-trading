@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { getPriceHistory, formatPrice } from "@/lib/api";
 import { CandleData } from "@/types/trading";
+import { useAppState } from "@/state/store";
 
 function ChartSkeleton() {
   return (
@@ -111,19 +112,14 @@ function CandlestickChart({ data }: { data: CandleData }) {
 }
 
 // Main chart component
-export function PriceChart({
-  selectedSymbol,
-  selectedInterval
-}: {
-  selectedSymbol: string;
-  selectedInterval: string;
-}) {
+export function PriceChart({ selectedInterval }: { selectedInterval: string }) {
   const [chartData, setChartData] = useState<CandleData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const ticker = useAppState((s) => s.ticker);
 
   useEffect(() => {
-    if (!selectedSymbol) {
+    if (!ticker) {
       setChartData(null);
       return;
     }
@@ -135,7 +131,7 @@ export function PriceChart({
       try {
         const startTime = Date.now() - 24 * 60 * 60 * 1000;
         const response = await getPriceHistory(
-          selectedSymbol,
+          ticker,
           selectedInterval,
           startTime
         );
@@ -155,9 +151,9 @@ export function PriceChart({
     };
 
     fetchChartData();
-  }, [selectedSymbol, selectedInterval]);
+  }, [ticker, selectedInterval]);
 
-  if (!selectedSymbol) {
+  if (!ticker) {
     return (
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
         <div className="text-center py-8 text-gray-500 dark:text-gray-400">

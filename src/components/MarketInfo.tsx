@@ -4,10 +4,12 @@ import { formatPrice } from "@/lib/api";
 import { useAppState } from "@/state/store";
 import { useMarketData } from "@/hooks/useMarket";
 
-export const MarketInfo = ({ selectedSymbol }: { selectedSymbol: string }) => {
+export const MarketInfo = () => {
   const { markets } = useMarketData();
-  const market = markets.find((m) => m.name === selectedSymbol);
-  const currentPrice = useAppState((s) => s.prices[selectedSymbol]);
+  const ticker = useAppState((s) => s.ticker);
+  const market = markets.find((m) => m.name === ticker);
+  const currentPrice = useAppState((s) => s.prices[ticker]);
+
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
@@ -17,7 +19,7 @@ export const MarketInfo = ({ selectedSymbol }: { selectedSymbol: string }) => {
         <div>
           <div className="text-sm text-gray-500 dark:text-gray-400">Symbol</div>
           <div className="font-semibold text-gray-900 dark:text-white">
-            {market?.name || selectedSymbol || "Loading..."}
+            {market?.name || ticker || "Loading..."}
           </div>
         </div>
         <div>

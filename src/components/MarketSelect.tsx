@@ -7,17 +7,16 @@ import MarketDropdown from "./MarketDropdown";
 import MarketPrice from "./MarketPrice";
 
 const MarketSelect = ({
-  selectedSymbol,
-  setSelectedSymbol,
   selectedInterval,
   setSelectedInterval
 }: {
-  selectedSymbol: string;
-  setSelectedSymbol: (symbol: string) => void;
   selectedInterval: string;
   setSelectedInterval: (interval: string) => void;
 }) => {
   const setPrices = useAppState((s) => s.setPrices);
+  const setTicker = useAppState((s) => s.setTicker);
+  const ticker = useAppState((s) => s.ticker);
+
   const { loading: priceLoading, prices } = usePriceData();
 
   const [showAssetDropdown, setShowAssetDropdown] = useState(false);
@@ -37,9 +36,9 @@ const MarketSelect = ({
     if (!markets.length || !prices || loading || priceLoading) return [];
 
     return markets
-      .filter((market) => prices[market.name])
-      .filter((market) =>
-        market.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      .filter((ticker) => prices[ticker.name])
+      .filter((ticker) =>
+        ticker.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
       )
       .sort((a, b) => {
         const priceA = parseFloat(prices[a.name] || "0");
@@ -56,7 +55,7 @@ const MarketSelect = ({
   ];
 
   const handleAssetSelect = (assetName: string) => {
-    setSelectedSymbol(assetName);
+    setTicker(assetName);
     setShowAssetDropdown(false);
     setAssetSearchTerm("");
   };
@@ -82,7 +81,7 @@ const MarketSelect = ({
             onClick={() => setShowAssetDropdown(!showAssetDropdown)}
             className="flex items-center space-x-2 text-xl font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
-            <span>{selectedSymbol}-USDC</span>
+            <span>{ticker}-USDC</span>
             <svg
               className={`w-4 h-4 transition-transform ${
                 showAssetDropdown ? "rotate-180" : ""
@@ -145,7 +144,7 @@ const MarketSelect = ({
                       key={market.name}
                       market={market}
                       handleAssetSelect={handleAssetSelect}
-                      selectedSymbol={selectedSymbol}
+                      ticker={ticker}
                     />
                   ))
                 )}
@@ -155,7 +154,7 @@ const MarketSelect = ({
         </div>
 
         <div className="text-right">
-          <MarketPrice selectedSymbol={selectedSymbol} />
+          <MarketPrice ticker={ticker} />
         </div>
       </div>
 

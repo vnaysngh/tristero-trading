@@ -5,17 +5,17 @@ import { tradingService, MarketOrderRequest } from "@/lib/trading-service";
 import { useMarketData } from "@/hooks/useMarketQueries";
 
 interface MarketTradingFormProps {
-  selectedSymbol?: string;
+  ticker?: string;
   currentPrice?: string;
 }
 
 export function MarketTradingForm({
-  selectedSymbol,
+  ticker,
   currentPrice
 }: MarketTradingFormProps) {
   const [isPending, startTransition] = useTransition();
   const [formData, setFormData] = useState({
-    coin: selectedSymbol || "",
+    coin: ticker || "",
     side: "long" as "long" | "short",
     size: "",
     sizePercentage: 0
@@ -29,10 +29,10 @@ export function MarketTradingForm({
   const [marginRequired, setMarginRequired] = useState(0);
 
   useEffect(() => {
-    if (selectedSymbol && selectedSymbol !== formData.coin) {
+    if (ticker && ticker !== formData.coin) {
       setFormData((prev) => ({
         ...prev,
-        coin: selectedSymbol
+        coin: ticker
       }));
       setFormData((prev) => ({
         ...prev,
@@ -42,14 +42,14 @@ export function MarketTradingForm({
       setOrderValue(0);
       setMarginRequired(0);
     }
-  }, [selectedSymbol, formData.coin]);
+  }, [ticker, formData.coin]);
 
   const { markets } = useMarketData();
 
   const leverage = 2;
 
   const calculateOrderDetails = (size: number) => {
-    if (!selectedSymbol || !currentPrice) return;
+    if (!ticker || !currentPrice) return;
 
     const price = parseFloat(currentPrice.toString());
     const calculatedOrderValue = size * price;
@@ -173,10 +173,10 @@ export function MarketTradingForm({
   };
 
   useEffect(() => {
-    if (formData.size && selectedSymbol && currentPrice) {
+    if (formData.size && ticker && currentPrice) {
       calculateOrderDetails(parseFloat(formData.size.toString()));
     }
-  }, [formData.size, selectedSymbol, currentPrice]);
+  }, [formData.size, ticker, currentPrice]);
 
   const getUSDCBalance = () => {
     if (!accountData?.marginSummary) return "0.00";
