@@ -83,7 +83,6 @@ export function TradeHistory() {
       const tradeValue = price * size;
       const fee = parseFloat(fill.fee);
       const closedPnl = parseFloat(fill.closedPnl);
-      console.log(closedPnl);
 
       return {
         time: formattedTime,

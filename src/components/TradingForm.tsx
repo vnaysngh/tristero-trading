@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAppState } from "@/state/store";
 import { useAccountData, usePlaceOrder } from "@/hooks/useMarket";
-import { USER_ADDRESS } from "@/constants";
+import { leverage, USER_ADDRESS } from "@/constants";
 
 export function MarketTradingForm() {
   const ticker = useAppState((s) => s.ticker);
@@ -42,9 +42,11 @@ export function MarketTradingForm() {
     }
   }, [ticker, formData.coin]);
 
-  const leverage = 2;
+  const handleInputChange = (field: string, value: string | number) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    resetOrder();
+  };
 
-  // Derived variables using useMemo
   const orderValue = useMemo(() => {
     if (!ticker || !currentPrice || !formData.size) return 0;
     const size = parseFloat(formData.size);
@@ -57,14 +59,30 @@ export function MarketTradingForm() {
     return orderValue / leverage;
   }, [orderValue, leverage]);
 
-  const hasEnoughMargin = () => {
-    const usdcBalance = parseFloat(getUSDCBalance());
-    return marginRequired <= usdcBalance;
-  };
+  const USDCBalance = useMemo(() => {
+    if (!accountData?.marginSummary) return "0.00";
+    return parseFloat(
+      accountData.crossMarginSummary.accountValue || "0"
+    ).toFixed(2);
+  }, [accountData?.marginSummary]);
 
-  const hasMinimumMargin = () => {
+  const positionSize = useMemo(() => {
+    if (!accountData?.assetPositions || !formData.coin) return "0.0000";
+    const position = accountData.assetPositions.find(
+      (pos: any) => pos.position.coin === formData.coin
+    );
+    if (!position) return "0.0000";
+    return parseFloat(position.position.szi || "0").toFixed(4);
+  }, [accountData?.assetPositions, formData.coin]);
+
+  const hasEnoughMargin = useMemo(() => {
+    const usdcBalance = parseFloat(USDCBalance);
+    return marginRequired <= usdcBalance;
+  }, [marginRequired, USDCBalance]);
+
+  const hasMinimumMargin = useMemo(() => {
     return marginRequired >= 10;
-  };
+  }, [marginRequired]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,7 +97,7 @@ export function MarketTradingForm() {
       return;
     }
 
-    if (!hasMinimumMargin()) {
+    if (!hasMinimumMargin) {
       return;
     }
 
@@ -99,27 +117,6 @@ export function MarketTradingForm() {
         }));
       }
     });
-  };
-
-  const handleInputChange = (field: string, value: string | number) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    resetOrder();
-  };
-
-  const getUSDCBalance = () => {
-    if (!accountData?.marginSummary) return "0.00";
-    return parseFloat(
-      accountData.crossMarginSummary.accountValue || "0"
-    ).toFixed(2);
-  };
-
-  const getPositionSize = () => {
-    if (!accountData?.assetPositions || !formData.coin) return "0.0000";
-    const position = accountData.assetPositions.find(
-      (pos: any) => pos.position.coin === formData.coin
-    );
-    if (!position) return "0.0000";
-    return parseFloat(position.position.szi || "0").toFixed(4);
   };
 
   return (
@@ -169,7 +166,7 @@ export function MarketTradingForm() {
                 {loadingBalance ? (
                   <span className="animate-pulse">Loading...</span>
                 ) : (
-                  `$${getUSDCBalance()}`
+                  `$${USDCBalance}`
                 )}
               </span>
               <button
@@ -190,7 +187,7 @@ export function MarketTradingForm() {
               {loadingBalance ? (
                 <span className="animate-pulse">Loading...</span>
               ) : (
-                `${getPositionSize()} ${formData.coin || "ETH"}`
+                `${positionSize} ${formData.coin || "ETH"}`
               )}
             </span>
           </div>
@@ -236,16 +233,16 @@ export function MarketTradingForm() {
             </span>
             <span
               className={`${
-                (!hasEnoughMargin() || !hasMinimumMargin()) && formData.size
+                (!hasEnoughMargin || !hasMinimumMargin) && formData.size
                   ? "text-red-600 dark:text-red-400"
                   : "text-gray-900 dark:text-white"
               }`}
             >
               ${marginRequired.toFixed(2)}
-              {!hasEnoughMargin() && formData.size && (
+              {!hasEnoughMargin && formData.size && (
                 <span className="ml-1 text-xs">(Insufficient)</span>
               )}
-              {!hasMinimumMargin() && formData.size && hasEnoughMargin() && (
+              {!hasMinimumMargin && formData.size && hasEnoughMargin && (
                 <span className="ml-1 text-xs">(Min $10)</span>
               )}
             </span>
@@ -284,15 +281,15 @@ export function MarketTradingForm() {
           type="submit"
           disabled={
             isPlacing ||
-            !hasEnoughMargin() ||
-            !hasMinimumMargin() ||
+            !hasEnoughMargin ||
+            !hasMinimumMargin ||
             !formData.size ||
             parseFloat(formData.size.toString()) <= 0
           }
           className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
             isPlacing ||
-            !hasEnoughMargin() ||
-            !hasMinimumMargin() ||
+            !hasEnoughMargin ||
+            !hasMinimumMargin ||
             !formData.size ||
             parseFloat(formData.size.toString()) <= 0
               ? "bg-gray-600 text-gray-400 cursor-not-allowed"
@@ -301,9 +298,9 @@ export function MarketTradingForm() {
         >
           {isPlacing
             ? "Placing Order..."
-            : !hasEnoughMargin()
+            : !hasEnoughMargin
             ? "Not Enough Margin"
-            : !hasMinimumMargin()
+            : !hasMinimumMargin
             ? "Min Margin $10"
             : !formData.size || parseFloat(formData.size.toString()) <= 0
             ? "Enter Size"
