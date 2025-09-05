@@ -61,10 +61,9 @@ export function usePositions(walletAddress: string) {
       throw new Error(result.error || "Failed to fetch positions");
     },
     enabled: !!walletAddress && walletAddress.length > 0,
-    staleTime: 5 * 1000,
+    staleTime: Infinity,
     gcTime: 2 * 60 * 1000,
-    retry: 3,
-    refetchInterval: 10 * 1000
+    retry: 3
   });
 }
 
@@ -128,8 +127,8 @@ export function useClosedPositions(walletAddress: string) {
       throw new Error(result.error || "Failed to fetch closed positions");
     },
     enabled: !!walletAddress && walletAddress.length > 0,
-    staleTime: 30 * 1000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: Infinity,
+    gcTime: 10 * 60 * 1000,
     retry: 3
   });
 }
