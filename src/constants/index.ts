@@ -15,6 +15,12 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/trades", label: "Trade History" }
 ];
 
+export const COLORS = {
+  GREEN: "#10b981",
+  RED: "#ef4444",
+  GRID: "text-gray-300 dark:text-gray-600"
+} as const;
+
 export const API_BASE_URL = "https://api.hyperliquid.xyz/info";
 
 export const leverage = 2;

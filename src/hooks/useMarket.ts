@@ -7,7 +7,8 @@ import {
   useClosePosition as useClosePositionMutation,
   useAccountData as useAccountDataQuery,
   usePlaceOrder as usePlaceOrderMutation,
-  useClosedPositions as useClosedPositionsQuery
+  useClosedPositions as useClosedPositionsQuery,
+  usePriceHistory as usePriceHistoryQuery
 } from "./useMarketQueries";
 
 export function useMarketData() {
@@ -89,5 +90,19 @@ export function usePlaceOrder(walletAddress: string) {
     orderError: error?.message || null,
     orderSuccess: isSuccess,
     reset: reset
+  };
+}
+
+export function usePriceHistory(ticker: string, interval: string) {
+  const { data, isLoading, error, refetch } = usePriceHistoryQuery(
+    ticker,
+    interval
+  );
+
+  return {
+    priceHistory: data || [],
+    loading: isLoading,
+    error: error?.message || null,
+    refetch: refetch
   };
 }

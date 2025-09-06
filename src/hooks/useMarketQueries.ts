@@ -6,7 +6,8 @@ import {
   getAllPrices,
   initializeTradingService,
   getAccountData,
-  placeOrder
+  placeOrder,
+  getPriceHistory
 } from "@/lib/api";
 import { tradingService } from "@/lib/trading-service";
 import { PlaceOrderRequest } from "@/types/trading";
@@ -147,7 +148,6 @@ export function usePlaceOrder(walletAddress: string) {
       return response.data;
     },
     onSuccess: (data) => {
-      // Invalidate and refetch account data and positions for the current wallet
       queryClient.invalidateQueries({
         queryKey: ["accountData", walletAddress]
       });
@@ -156,5 +156,25 @@ export function usePlaceOrder(walletAddress: string) {
     onError: (error) => {
       console.error("Error placing order:", error);
     }
+  });
+}
+
+export function usePriceHistory(ticker: string, interval: string) {
+  return useQuery({
+    queryKey: ["priceHistory", ticker, interval],
+    queryFn: async () => {
+      const startTime = Date.now() - 24 * 60 * 60 * 1000; // 24 hours ago
+      const response = await getPriceHistory(ticker, interval, startTime);
+
+      if (response.success && response.data) {
+        return response.data;
+      }
+
+      throw new Error(response.error || "Failed to fetch price history");
+    },
+    enabled: !!ticker && !!interval,
+    staleTime: 30 * 1000,
+    gcTime: 5 * 60 * 1000,
+    retry: 3
   });
 }

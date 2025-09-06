@@ -1,23 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { getPriceHistory } from "@/lib/api";
-import { CandleBar, CandleData, PriceRange, ChartState } from "@/types/trading";
+import { usePriceHistory } from "@/hooks/useMarket";
+import { CandleBar, CandleData, PriceRange } from "@/types/trading";
 import { useAppState } from "@/state/store";
 import { formatPrice } from "@/utils";
 import {
   CHART_DIMENSIONS,
   CANDLES_TO_SHOW,
   GRID_LINES,
-  INITIAL_CHART_STATE
+  COLORS
 } from "@/constants";
-import { CHART_TIMEFRAME_MS } from "@/constants";
-
-const COLORS = {
-  GREEN: "#10b981",
-  RED: "#ef4444",
-  GRID: "text-gray-300 dark:text-gray-600"
-} as const;
 
 function ChartSkeleton() {
   return (
@@ -204,51 +196,10 @@ export default function PriceChart({
   selectedInterval: string;
 }) {
   const ticker = useAppState((s) => s.ticker);
-  const [chartState, setChartState] = useState<ChartState>(INITIAL_CHART_STATE);
-
-  function updateChartState(updates: Partial<ChartState>) {
-    setChartState((prev) => ({ ...prev, ...updates }));
-  }
-
-  function resetChartState() {
-    setChartState(INITIAL_CHART_STATE);
-  }
-
-  async function fetchChartData() {
-    if (!ticker) {
-      resetChartState();
-      return;
-    }
-
-    updateChartState({ loading: true, error: null });
-
-    try {
-      const startTime = Date.now() - CHART_TIMEFRAME_MS;
-      const response = await getPriceHistory(
-        ticker,
-        selectedInterval,
-        startTime
-      );
-
-      if (response.success && response.data) {
-        updateChartState({
-          data: response.data,
-          loading: false
-        });
-      } else {
-        throw new Error(response.error || "Failed to fetch chart data");
-      }
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Unknown error occurred";
-      updateChartState({
-        error: errorMessage,
-        loading: false,
-        data: null
-      });
-      console.error("Error fetching chart data:", err);
-    }
-  }
+  const { priceHistory, loading, error } = usePriceHistory(
+    ticker,
+    selectedInterval
+  );
 
   function renderChartContent() {
     if (!ticker) {
@@ -257,24 +208,20 @@ export default function PriceChart({
       );
     }
 
-    if (chartState.loading) {
+    if (loading) {
       return <ChartSkeleton />;
     }
 
-    if (chartState.error) {
-      return <ErrorState error={chartState.error} />;
+    if (error) {
+      return <ErrorState error={error} />;
     }
 
-    if (!chartState.data) {
+    if (!priceHistory || priceHistory.length === 0) {
       return <EmptyState icon="📈" message="No chart data available" />;
     }
 
-    return <CandlestickChart data={chartState.data} />;
+    return <CandlestickChart data={priceHistory} />;
   }
-
-  useEffect(() => {
-    fetchChartData();
-  }, [ticker, selectedInterval]);
 
   return <ChartContainer>{renderChartContent()}</ChartContainer>;
 }
