@@ -171,7 +171,7 @@ const MarketSelect = ({
   }`;
 
   return (
-    <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
       <div className="flex items-center space-x-4">
         <div className="relative">
           <button
@@ -218,7 +218,7 @@ const MarketSelect = ({
         </div>
       </div>
 
-      <div className="flex space-x-2">
+      <div className="flex flex-wrap gap-2">
         {INTERVALS.map((interval) => (
           <IntervalButton
             key={interval.value}
