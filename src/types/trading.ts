@@ -1,6 +1,9 @@
 // Trading interface types for Hyperliquid API and application state
 
+import { timeframes } from "@/constants";
+
 export type Theme = "light" | "dark";
+export type CandleData = CandleBar[];
 
 export interface NavItem {
   href: string;
@@ -33,8 +36,6 @@ export interface HyperliquidMetaResponse {
 export interface PriceData {
   [coin: string]: string;
 }
-
-export type CandleData = CandleBar[];
 
 export interface Position {
   id: string;
@@ -228,3 +229,66 @@ export interface PositionCalculation {
   pnlFormatted: string;
   roeFormatted: string;
 }
+
+// Portfolio types
+export interface PortfolioDataPoint {
+  timestamp: number;
+  value: string;
+}
+
+export interface PortfolioPeriod {
+  accountValueHistory: PortfolioDataPoint[];
+  pnlHistory: PortfolioDataPoint[];
+  vlm: string;
+}
+
+export interface PortfolioData extends Array<[string, PortfolioPeriod]> {}
+
+export interface PortfolioStats {
+  currentValue: number;
+  totalPnl: number;
+  totalPnlPercentage: number;
+  volume: number;
+  period: string;
+}
+
+export interface ChartDataPoint {
+  timestamp: number;
+  value: number;
+  pnl: number;
+}
+export interface PortfolioProps {
+  portfolio: PortfolioData;
+}
+
+export type TimeframePnlData = {
+  pnl: number;
+  percentage: number;
+  changeType: "positive" | "negative";
+};
+
+export type Stat = {
+  label: string;
+  value: string;
+  change: string | null;
+  changeType: "positive" | "negative" | null;
+};
+
+export type TimeframeKey = "day" | "week" | "month" | "allTime";
+
+export type TimeframeConfig = {
+  key: TimeframeKey;
+  label: string;
+};
+
+export type ProcessedTimeframeData = {
+  currentValue: number;
+  pnl: number;
+  pnlPercentage: number;
+  volume: number;
+  dataPoints: number;
+};
+
+export type TimeframeRow = TimeframeConfig & {
+  data: ProcessedTimeframeData;
+};

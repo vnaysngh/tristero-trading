@@ -4,6 +4,7 @@ import {
   Interval,
   NavItem,
   Theme,
+  TimeframeConfig,
   ValidationMessages
 } from "@/types/trading";
 
@@ -12,7 +13,8 @@ export const DEFAULT_THEME: Theme = "dark";
 export const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "Markets" },
   { href: "/positions", label: "Positions" },
-  { href: "/trades", label: "Trade History" }
+  { href: "/trades", label: "Trade History" },
+  { href: "/portfolio", label: "Portfolio" }
 ];
 
 export const COLORS = {
@@ -20,6 +22,29 @@ export const COLORS = {
   RED: "#ef4444",
   GRID: "text-gray-300 dark:text-gray-600"
 } as const;
+
+export const timeframes = [
+  { key: "day", label: "24h" },
+  { key: "week", label: "7d" },
+  { key: "month", label: "30d" },
+  { key: "allTime", label: "All Time" }
+] as const;
+
+export const TIMEFRAME_CONFIG: readonly TimeframeConfig[] = [
+  { key: "day", label: "24h" },
+  { key: "week", label: "7d" },
+  { key: "month", label: "30d" },
+  { key: "allTime", label: "All Time" }
+] as const;
+
+export const TABLE_HEADERS = [
+  "Timeframe",
+  "Value",
+  "P&L",
+  "P&L %",
+  "Volume",
+  "Data Points"
+] as const;
 
 export const API_BASE_URL = "https://api.hyperliquid.xyz/info";
 

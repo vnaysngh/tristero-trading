@@ -168,6 +168,26 @@ class TradingService {
       };
     }
   }
+
+  async getPortfolio(userAddress: string): Promise<TradingResult> {
+    if (!this.sdk) {
+      throw new Error("Trading service not initialized");
+    }
+
+    try {
+      const response = await this.sdk.info.portfolio(userAddress);
+      return {
+        success: true,
+        data: response
+      };
+    } catch (error) {
+      console.error("Error getting portfolio:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error occurred"
+      };
+    }
+  }
 }
 
 export const tradingService = new TradingService();

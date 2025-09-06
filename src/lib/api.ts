@@ -155,3 +155,29 @@ export async function placeOrder(
     };
   }
 }
+
+export async function getPortfolio(
+  userAddress: string
+): Promise<ApiResponse<any>> {
+  try {
+    const result = await tradingService.getPortfolio(userAddress);
+
+    if (result.success) {
+      return { success: true, data: result.data };
+    }
+
+    return {
+      success: false,
+      error: result.error || "Failed to fetch portfolio data"
+    };
+  } catch (error) {
+    console.error("Error fetching portfolio:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch portfolio data"
+    };
+  }
+}

@@ -8,7 +8,8 @@ import {
   useAccountData as useAccountDataQuery,
   usePlaceOrder as usePlaceOrderMutation,
   useTradeHistory as useTradeHistoryQuery,
-  usePriceHistory as usePriceHistoryQuery
+  usePriceHistory as usePriceHistoryQuery,
+  usePortfolio as usePortfolioQuery
 } from "./useMarketQueries";
 
 export function useMarketData() {
@@ -101,6 +102,17 @@ export function usePriceHistory(ticker: string, interval: string) {
 
   return {
     priceHistory: data || [],
+    loading: isLoading,
+    error: error?.message || null,
+    refetch: refetch
+  };
+}
+
+export function usePortfolio(walletAddress: string) {
+  const { data, isLoading, error, refetch } = usePortfolioQuery(walletAddress);
+
+  return {
+    portfolio: data || null,
     loading: isLoading,
     error: error?.message || null,
     refetch: refetch

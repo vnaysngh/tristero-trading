@@ -7,7 +7,8 @@ import {
   initializeTradingService,
   getAccountData,
   placeOrder,
-  getPriceHistory
+  getPriceHistory,
+  getPortfolio
 } from "@/lib/api";
 import { tradingService } from "@/lib/trading-service";
 import { PlaceOrderRequest } from "@/types/trading";
@@ -175,5 +176,22 @@ export function usePriceHistory(ticker: string, interval: string) {
     staleTime: 30 * 1000,
     gcTime: 5 * 60 * 1000,
     retry: 3
+  });
+}
+
+export function usePortfolio(walletAddress: string) {
+  return useQuery({
+    queryKey: ["portfolio", walletAddress],
+    queryFn: async () => {
+      const response = await getPortfolio(walletAddress);
+      if (response.success && response.data) {
+        return response.data;
+      }
+      throw new Error(response.error || "Failed to fetch portfolio data");
+    },
+    enabled: !!walletAddress && walletAddress.length > 0,
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    retry: false
   });
 }
