@@ -1,6 +1,6 @@
 import { PriceData, Theme } from "@/types/trading";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import { DEFAULT_THEME } from "@/constants";
 
 interface AppState {
