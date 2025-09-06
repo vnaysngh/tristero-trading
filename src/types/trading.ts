@@ -1,5 +1,11 @@
 // Trading interface types for Hyperliquid API and application state
 
+export type Theme = "light" | "dark";
+
+export interface NavItem {
+  href: string;
+  label: string;
+}
 export interface MarketData {
   name: string;
   szDecimals: number;

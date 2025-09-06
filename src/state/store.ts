@@ -1,11 +1,14 @@
-import { PriceData } from "@/types/trading";
+import { PriceData, Theme } from "@/types/trading";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { DEFAULT_THEME } from "@/constants";
 
 interface AppState {
+  theme: Theme;
   ticker: string;
   prices: PriceData;
   walletAddress: string;
+  setTheme: (theme: Theme) => void;
   setTicker: (ticker: string) => void;
   setPrices: (batch: PriceData) => void;
   setWalletAddress: (address: string) => void;
@@ -14,9 +17,11 @@ interface AppState {
 export const useAppState = create<AppState>()(
   persist(
     (set, get) => ({
+      theme: DEFAULT_THEME,
       ticker: "ETH",
       prices: {},
       walletAddress: "",
+      setTheme: (theme: Theme) => set({ theme: theme }),
       setTicker: (ticker: string) => set({ ticker: ticker }),
       setPrices: (batch: PriceData) => {
         const state = get();
@@ -48,7 +53,8 @@ export const useAppState = create<AppState>()(
     {
       name: "ticker",
       partialize: (state) => ({
-        ticker: state.ticker
+        ticker: state.ticker,
+        theme: state.theme
       })
     }
   )

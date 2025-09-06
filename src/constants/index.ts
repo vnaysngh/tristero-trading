@@ -2,8 +2,18 @@ import {
   ChartDimensions,
   ChartState,
   Interval,
+  NavItem,
+  Theme,
   ValidationMessages
 } from "@/types/trading";
+
+export const DEFAULT_THEME: Theme = "dark";
+
+export const NAV_ITEMS: NavItem[] = [
+  { href: "/", label: "Markets" },
+  { href: "/positions", label: "Positions" },
+  { href: "/trades", label: "Trade History" }
+];
 
 export const API_BASE_URL = "https://api.hyperliquid.xyz/info";
 
