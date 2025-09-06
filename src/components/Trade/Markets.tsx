@@ -3,9 +3,9 @@
 import { useState } from "react";
 import PriceChart from "@/components/Trade/PriceChart";
 import MarketTradingForm from "@/components/Trade/TradeForm/TradingForm";
-import MarketSelect from "@/components/Trade/MarketSelect";
+import MarketSelect from "@/components/Trade/MarketSelect/MarketSelect";
 import { ErrorBoundary } from "../ErrorBoundary";
-import { MarketInfo } from "./MarketInfo";
+import { MarketInfo } from "./MarketSelect/MarketInfo";
 
 export const dynamic = "force-dynamic";
 

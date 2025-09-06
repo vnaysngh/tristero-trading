@@ -1,6 +1,5 @@
 import React from "react";
 
-// Theme Icons
 export const SunIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
   <svg
     className={className}

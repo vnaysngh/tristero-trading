@@ -218,3 +218,13 @@ export interface PriceRange {
   min: number;
   range: number;
 }
+
+export interface PositionCalculation {
+  size: number;
+  isLong: boolean;
+  isShort: boolean;
+  pnl: number;
+  roe: number;
+  pnlFormatted: string;
+  roeFormatted: string;
+}

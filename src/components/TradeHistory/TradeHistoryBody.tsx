@@ -2,7 +2,7 @@ import { ProcessedPosition } from "@/types/trading";
 import { getDirectionColorClass, getPnlColorClass } from "@/utils";
 import React from "react";
 
-export const TradeHistoryTable = ({
+export const TradeHistoryBody = ({
   position
 }: {
   position: ProcessedPosition;

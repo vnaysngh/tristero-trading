@@ -1,70 +1,16 @@
 import { useAppState } from "@/state/store";
 import { PositionsTableProps } from "@/types/trading";
-import { formatPrice } from "@/utils";
+import { getCalculations, getStyleClasses } from "@/utils";
 import React from "react";
 
-const PositionsTable = ({
+const PositionsTableBody = ({
   position,
   closingPositions,
   handleClosePosition
 }: PositionsTableProps) => {
   const currentPrice = useAppState((s) => s.prices[position.coin]);
-
-  const getCalculations = () => {
-    const size = parseFloat(position.szi || "0");
-    const currentPriceNum = parseFloat(currentPrice);
-    const entryPrice = position.entryPx;
-    const marginUsed = parseFloat(position.marginUsed || "0");
-
-    const isLong = size > 0;
-    const isShort = size < 0;
-
-    const priceDifference = isLong
-      ? currentPriceNum - entryPrice
-      : entryPrice - currentPriceNum;
-
-    const pnl = Math.abs(size) * priceDifference;
-    const roe = marginUsed > 0 ? (pnl / marginUsed) * 100 : 0;
-
-    return {
-      size,
-      isLong,
-      isShort,
-      pnl,
-      roe,
-      pnlFormatted:
-        pnl >= 0
-          ? `+$${formatPrice(pnl.toString())}`
-          : `-$${formatPrice(Math.abs(pnl).toString())}`,
-      roeFormatted:
-        roe >= 0
-          ? `+${formatPrice(roe.toString())}%`
-          : `${formatPrice(roe.toString())}%`
-    };
-  };
-
-  const calculations = getCalculations();
-
-  const getStyleClasses = () => ({
-    positionIndicator: calculations.isLong
-      ? "bg-green-500"
-      : calculations.isShort
-      ? "bg-red-500"
-      : "bg-gray-400",
-
-    positionBadge: calculations.isLong
-      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-      : calculations.isShort
-      ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-      : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
-
-    pnlColor:
-      calculations.pnl > 0
-        ? "text-green-600 dark:text-green-400"
-        : "text-red-600 dark:text-red-400"
-  });
-
-  const styleClasses = getStyleClasses();
+  const calculations = getCalculations(position, currentPrice);
+  const styleClasses = getStyleClasses(calculations);
 
   const isClosing = closingPositions.has(position.coin);
   const leverageDisplay = position.leverage?.value || 1;
@@ -80,7 +26,6 @@ const PositionsTable = ({
 
   return (
     <tr className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
-      {/* Position Info */}
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center space-x-3">
           <div
@@ -97,27 +42,22 @@ const PositionsTable = ({
         </div>
       </td>
 
-      {/* Size */}
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-        {position.szi || 0}
+        {parseFloat(position.szi || "0").toFixed(4)}
       </td>
 
-      {/* Position Value */}
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-        {position.positionValue || 0}
+        {parseFloat(position.positionValue || "0").toFixed(2)}
       </td>
 
-      {/* Entry Price */}
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
         {position.entryPx || "N/A"}
       </td>
 
-      {/* Current Price */}
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
         {currentPrice}
       </td>
 
-      {/* PnL & ROE */}
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center space-x-2">
           <div className="text-sm">
@@ -128,17 +68,14 @@ const PositionsTable = ({
         </div>
       </td>
 
-      {/* Liquidation Price */}
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-        {position.liquidationPx}
+        {parseFloat(position.liquidationPx || "0").toFixed(2)}
       </td>
 
-      {/* Margin Used */}
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-        {position.marginUsed}
+        {parseFloat(position.marginUsed || "0").toFixed(2)}
       </td>
 
-      {/* Actions */}
       <td className="px-6 py-4 whitespace-nowrap">
         <button
           onClick={handleClose}
@@ -156,4 +93,4 @@ const PositionsTable = ({
   );
 };
 
-export default PositionsTable;
+export default PositionsTableBody;
