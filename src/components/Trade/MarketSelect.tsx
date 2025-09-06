@@ -6,7 +6,7 @@ import MarketDropdown from "./MarketDropdown";
 import MarketPrice from "./MarketPrice";
 import { Interval, MarketData, MarketSelectProps } from "@/types/trading";
 import { INTERVALS } from "@/constants";
-import { SearchIcon, ChevronDownIcon } from "./Icons";
+import { SearchIcon, ChevronDownIcon } from "../Icons";
 
 const DROPDOWN_CLASSES =
   "asset-dropdown absolute top-full left-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50 max-h-80 overflow-hidden";

@@ -1,8 +1,7 @@
-// components/PricesPoller.tsx
 "use client";
 
 import { useEffect } from "react";
-import { useAppState } from "@/state/store"; // adjust import to your store path
+import { useAppState } from "@/state/store";
 import { usePriceData } from "@/hooks/useMarket";
 
 export default function PricePoll() {

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { usePositions, useClosePosition } from "@/hooks/useMarket";
 import PositionsTable from "./PositionsTable";
 import { useAppState } from "@/state/store";
-import { WarningIcon, BarChartIcon } from "./Icons";
+import { WarningIcon, BarChartIcon } from "../Icons";
 
 const headers = [
   "Coin",

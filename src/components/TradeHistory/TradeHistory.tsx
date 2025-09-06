@@ -5,7 +5,7 @@ import { formatPrice, formatTradeTime } from "@/utils";
 import { ProcessedPosition, RawFill } from "@/types/trading";
 import { TradeHistoryTable } from "./TradeHistoryTable";
 import { useAppState } from "@/state/store";
-import { BarChartIcon } from "./Icons";
+import { BarChartIcon } from "../Icons";
 
 export function TradeHistory() {
   const walletAddress = useAppState((s) => s.walletAddress);

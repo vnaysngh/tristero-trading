@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import PriceChart from "@/components/PriceChart";
-import MarketTradingForm from "@/components/TradingForm";
-import MarketSelect from "@/components/MarketSelect";
+import PriceChart from "@/components/Trade/PriceChart";
+import MarketTradingForm from "@/components/Trade/TradeForm/TradingForm";
+import MarketSelect from "@/components/Trade/MarketSelect";
+import { ErrorBoundary } from "../ErrorBoundary";
 import { MarketInfo } from "./MarketInfo";
-import { ErrorBoundary } from "./ErrorBoundary";
 
 export const dynamic = "force-dynamic";
 

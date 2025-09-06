@@ -1,5 +1,5 @@
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { TradeHistory } from "@/components/TradeHistory";
+import { TradeHistory } from "@/components/TradeHistory/TradeHistory";
 
 export default function TradesPage() {
   return (

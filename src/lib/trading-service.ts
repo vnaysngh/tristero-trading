@@ -22,11 +22,8 @@ export interface TradingResult {
 
 class TradingService {
   private sdk: Hyperliquid | null = null;
-  private config: TradingConfig | null = null;
 
   async initialize(config: TradingConfig): Promise<void> {
-    this.config = config;
-
     this.sdk = new Hyperliquid({
       privateKey: config.privateKey,
       testnet: config.testnet || false,

@@ -1,4 +1,4 @@
-import Markets from "@/components/Markets";
+import Markets from "@/components/Trade/Markets";
 
 export default function Home() {
   return <Markets />;
