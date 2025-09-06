@@ -6,6 +6,7 @@ import MarketDropdown from "./MarketDropdown";
 import MarketPrice from "./MarketPrice";
 import { Interval, MarketData, MarketSelectProps } from "@/types/trading";
 import { INTERVALS } from "@/constants";
+import { SearchIcon, ChevronDownIcon } from "./Icons";
 
 const DROPDOWN_CLASSES =
   "asset-dropdown absolute top-full left-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50 max-h-80 overflow-hidden";
@@ -20,19 +21,7 @@ const SearchInput = ({
   <div className="p-3 border-b border-gray-200 dark:border-gray-700">
     <div className="relative">
       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <svg
-          className="h-4 w-4 text-gray-400"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
+        <SearchIcon />
       </div>
       <input
         type="text"
@@ -179,19 +168,7 @@ const MarketSelect = ({
             className="flex items-center space-x-2 text-xl font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
             <span>{ticker}-USDC</span>
-            <svg
-              className={chevronClasses}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+            <ChevronDownIcon className={chevronClasses} />
           </button>
 
           {showAssetDropdown && (

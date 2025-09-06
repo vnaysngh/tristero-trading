@@ -5,6 +5,7 @@ import { usePositions, useClosePosition } from "@/hooks/useMarket";
 import PositionsTable from "./PositionsTable";
 import { tableHeaders } from "@/constants";
 import { useAppState } from "@/state/store";
+import { WarningIcon, BarChartIcon } from "./Icons";
 
 const LoadingState = () => (
   <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -25,19 +26,7 @@ const ErrorState = ({
   <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
     <div className="p-8 text-center">
       <div className="w-16 h-16 mx-auto mb-4 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
-        <svg
-          className="w-8 h-8 text-red-600 dark:text-red-400"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-          />
-        </svg>
+        <WarningIcon />
       </div>
       <p className="text-red-600 dark:text-red-400 font-medium mb-2">
         Failed to load positions
@@ -87,19 +76,7 @@ const EmptyState = () => (
     <td colSpan={tableHeaders.length} className="px-6 py-12 text-center">
       <div className="text-gray-500 dark:text-gray-400">
         <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-          <svg
-            className="w-8 h-8"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-            />
-          </svg>
+          <BarChartIcon />
         </div>
         <p className="text-lg font-medium">No open positions yet</p>
         <p className="text-sm mt-1">Start trading to see your positions here</p>
