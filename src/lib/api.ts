@@ -6,7 +6,7 @@ import {
   HyperliquidMetaResponse,
   TradingServiceConfig,
   PlaceOrderRequest
-} from "@/types/trading";
+} from "@/types";
 import { tradingService } from "./trading-service";
 import { API_BASE_URL } from "@/constants";
 

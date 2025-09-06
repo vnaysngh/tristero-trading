@@ -1,4 +1,4 @@
-import { MarketData } from "@/types/trading";
+import { MarketData } from "@/types";
 import MarketDropdown from "./MarketDropdown";
 
 const DropdownContent = ({

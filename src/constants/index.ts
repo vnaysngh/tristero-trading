@@ -6,7 +6,7 @@ import {
   Theme,
   TimeframeConfig,
   ValidationMessages
-} from "@/types/trading";
+} from "@/types";
 
 export const DEFAULT_THEME: Theme = "dark";
 

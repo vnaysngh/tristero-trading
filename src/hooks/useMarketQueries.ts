@@ -11,7 +11,7 @@ import {
   getPortfolio
 } from "@/lib/api";
 import { tradingService } from "@/lib/trading-service";
-import { PlaceOrderRequest } from "@/types/trading";
+import { PlaceOrderRequest } from "@/types";
 
 export function useMarketData() {
   return useQuery({

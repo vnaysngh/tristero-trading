@@ -1,13 +1,11 @@
-"use client";
-
-import { PortfolioProps, Stat } from "@/types/trading";
+import { PortfolioProps, Stat } from "@/types";
 import {
   calculatePnlData,
   extractTimeframeData,
   getChangeTypeClass,
   getLatestValue,
   getPnLData
-} from "@/utils/portfolio";
+} from "@/utils";
 
 export function PortfolioStats({ portfolio }: PortfolioProps) {
   const portfolioArray = Array.isArray(portfolio) ? portfolio : [];

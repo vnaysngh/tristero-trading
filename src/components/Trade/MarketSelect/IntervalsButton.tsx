@@ -1,4 +1,4 @@
-import { Interval } from "@/types/trading";
+import { Interval } from "@/types";
 
 const IntervalButton = ({
   interval,

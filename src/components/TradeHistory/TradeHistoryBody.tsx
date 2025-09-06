@@ -1,4 +1,4 @@
-import { ProcessedPosition } from "@/types/trading";
+import { ProcessedPosition } from "@/types";
 import { getDirectionColorClass, getPnlColorClass } from "@/utils";
 import React from "react";
 

@@ -1,4 +1,4 @@
-import { PriceData, Theme } from "@/types/trading";
+import { PriceData, Theme } from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DEFAULT_THEME } from "@/constants";

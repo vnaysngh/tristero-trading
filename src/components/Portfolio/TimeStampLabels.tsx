@@ -1,5 +1,5 @@
-import { formatTimestampByTimeframe } from "@/utils/portfolio";
-import { TimeframeKey } from "@/types/trading";
+import { formatTimestampByTimeframe } from "@/utils";
+import { TimeframeKey } from "@/types";
 
 function TimestampLabels({
   firstTimestamp,

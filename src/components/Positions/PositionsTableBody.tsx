@@ -1,5 +1,5 @@
 import { useAppState } from "@/state/store";
-import { PositionsTableProps } from "@/types/trading";
+import { PositionsTableProps } from "@/types";
 import { getCalculations, getStyleClasses } from "@/utils";
 import React from "react";
 

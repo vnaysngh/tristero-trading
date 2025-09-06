@@ -16,14 +16,14 @@ import Balances from "./Balances";
 import OrderDetails from "./OrderDetails";
 import SubmitButton from "./SubmitButton";
 import {
-  INITIAL_FORM_DATA,
   FormData,
   CalculationResult,
   AccountValues,
   ValidationResult,
   OrderSide,
   OrderRequest,
-  TradingFormState
+  TradingFormState,
+  INITIAL_FORM_DATA
 } from "@/types/trading";
 
 export default function MarketTradingForm() {

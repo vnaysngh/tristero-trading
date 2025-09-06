@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { usePositions, useClosePosition } from "@/hooks/useMarket";
-import PositionsTable from "./PositionsTableBody";
 import { useAppState } from "@/state/store";
 import LoadingState from "../common/LoadingState";
 import ErrorState from "./ErrorState";

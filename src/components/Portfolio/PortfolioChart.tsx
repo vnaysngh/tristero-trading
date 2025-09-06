@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { PortfolioProps, TimeframeKey } from "@/types/trading";
+import { PortfolioProps, TimeframeKey } from "@/types";
 import {
   processPortfolioData,
   calculateChartBounds,
   generateValuePolylinePoints
-} from "@/utils/portfolio";
+} from "@/utils";
 import TimeFrameButtons from "./TimeFrameButtons";
 import TotalValueChart from "./ValueChart";
 import PNLChart from "./PNLChart";

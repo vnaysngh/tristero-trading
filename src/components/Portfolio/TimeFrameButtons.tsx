@@ -1,5 +1,5 @@
 import { timeframes } from "@/constants";
-import { TimeframeKey } from "@/types/trading";
+import { TimeframeKey } from "@/types";
 
 export function TimeFrameButtons({
   selectedTimeframe,

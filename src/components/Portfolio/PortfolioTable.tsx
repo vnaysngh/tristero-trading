@@ -1,14 +1,12 @@
-"use client";
-
 import {
   PortfolioProps,
   ProcessedTimeframeData,
   TimeframeKey,
   TimeframeRow
-} from "@/types/trading";
+} from "@/types";
 import TableHeader from "@/components/common/TableHeader";
 import { TABLE_HEADERS, TIMEFRAME_CONFIG } from "@/constants";
-import { formatCurrency, formatPercentage } from "@/utils/portfolio";
+import { formatCurrency, formatPercentage } from "@/utils";
 import { getPnlColorClass } from "@/utils";
 
 function findTimeframeData(portfolioArray: any[], timeframeKey: TimeframeKey) {

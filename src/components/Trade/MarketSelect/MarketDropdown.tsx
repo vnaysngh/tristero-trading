@@ -1,6 +1,6 @@
 import { useAppState } from "@/state/store";
 import React from "react";
-import { MarketData } from "@/types/trading";
+import { MarketData } from "@/types";
 import { formatPrice } from "@/utils";
 
 const MarketDropdown = ({

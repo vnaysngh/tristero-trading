@@ -4,7 +4,7 @@ import { useMarketData, usePriceData } from "@/hooks/useMarket";
 import { useAppState } from "@/state/store";
 import MarketDropdown from "./MarketDropdown";
 import MarketPrice from "./MarketPrice";
-import { Interval, MarketData, MarketSelectProps } from "@/types/trading";
+import { Interval, MarketData, MarketSelectProps } from "@/types";
 import { INTERVALS } from "@/constants";
 import { ChevronDownIcon } from "../../Icons";
 import SearchInput from "./SearchInput";

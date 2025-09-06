@@ -2,7 +2,7 @@
 
 import { useTradeHistory } from "@/hooks/useMarket";
 import { formatPrice, formatTradeTime } from "@/utils";
-import { ProcessedPosition, RawFill } from "@/types/trading";
+import { ProcessedPosition, RawFill } from "@/types";
 import { useAppState } from "@/state/store";
 import EmptyState from "../common/EmptyState";
 import LoadingState from "../common/LoadingState";

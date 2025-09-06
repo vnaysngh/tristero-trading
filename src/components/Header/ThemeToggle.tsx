@@ -1,4 +1,4 @@
-import { Theme } from "@/types/trading";
+import { Theme } from "@/types";
 import { MoonIcon, SunIcon } from "../Icons";
 
 const ThemeToggle = ({

@@ -1,7 +1,7 @@
 import Navigation from "./Navigation";
 import ThemeToggle from "./ThemeToggle";
 import WalletSection from "./WalletSection";
-import { Theme } from "@/types/trading";
+import { Theme } from "@/types";
 
 const ErrorBanner = ({ error }: { error: string }) => (
   <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">

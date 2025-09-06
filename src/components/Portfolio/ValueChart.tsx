@@ -1,5 +1,5 @@
-import { getValueYPosition } from "@/utils/portfolio";
-import { ChartDataPoint } from "@/types/trading";
+import { getValueYPosition } from "@/utils";
+import { ChartDataPoint } from "@/types";
 
 function TotalValueChart({
   valuePolylinePoints,

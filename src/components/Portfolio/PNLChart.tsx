@@ -1,5 +1,5 @@
-import { ChartDataPoint } from "@/types/trading";
-import { getPnlYPosition } from "@/utils/portfolio";
+import { ChartDataPoint } from "@/types";
+import { getPnlYPosition } from "@/utils";
 
 function PNLChart({
   chartData,

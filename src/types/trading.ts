@@ -1,115 +1,5 @@
-// Trading interface types for Hyperliquid API and application state
-
-import { timeframes } from "@/constants";
-
-export type Theme = "light" | "dark";
-export type CandleData = CandleBar[];
-
-export interface NavItem {
-  href: string;
-  label: string;
-}
-export interface MarketData {
-  name: string;
-  szDecimals: number;
-  maxLeverage: number;
-  marginTableId: number;
-  onlyIsolated?: boolean;
-  isDelisted?: boolean;
-}
-
-export interface MarketSelectProps {
-  selectedInterval: string;
-  setSelectedInterval: (interval: string) => void;
-}
-
-export interface Interval {
-  value: string;
-  label: string;
-}
-
-export interface HyperliquidMetaResponse {
-  universe: MarketData[];
-  marginTables: any[];
-}
-
-export interface PriceData {
-  [coin: string]: string;
-}
-
-export interface Position {
-  id: string;
-  coin: string;
-  side: "long" | "short";
-  size: number;
-  entryPrice: number;
-  currentPrice: number;
-  pnl: number;
-  pnlPercentage: number;
-  timestamp: number;
-}
-
-export interface Transaction {
-  id: string;
-  type: "buy" | "sell";
-  coin: string;
-  size: number;
-  price: number;
-  timestamp: number;
-  pnl?: number;
-}
-
-export interface TradingFormData {
-  coin: string;
-  side: "long" | "short";
-  size: number;
-  price?: number; // Optional for market orders
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
-
-export interface PositionTable {
-  coin: string;
-  szi?: string;
-  positionValue?: string;
-  entryPx: number;
-  liquidationPx?: string;
-  marginUsed?: string;
-  leverage?: {
-    value: number;
-  };
-}
-
-export interface PositionsTableProps {
-  position: PositionTable;
-  closingPositions: Set<string>;
-  handleClosePosition: (coin: string) => void;
-}
-
-export interface TradingServiceConfig {
-  privateKey: string;
-  userAddress: string;
-  testnet?: boolean;
-  vaultAddress?: string;
-}
-
-export interface ClosePositionResult {
-  success: boolean;
-  error?: string;
-  message?: string;
-}
-
-export interface PlaceOrderRequest {
-  coin: string;
-  side: "long" | "short";
-  size: number;
-  leverage: number;
-}
-
+// types/trading.ts
+// Trading form and order-related types
 export type OrderSide = "long" | "short";
 
 export interface FormData {
@@ -124,6 +14,20 @@ export interface OrderRequest {
   side: OrderSide;
   size: number;
   leverage: number;
+}
+
+export interface PlaceOrderRequest {
+  coin: string;
+  side: "long" | "short";
+  size: number;
+  leverage: number;
+}
+
+export interface TradingFormData {
+  coin: string;
+  side: "long" | "short";
+  size: number;
+  price?: number; // Optional for market orders
 }
 
 export interface CalculationResult {
@@ -143,41 +47,6 @@ export interface ValidationResult {
   canSubmit: boolean;
 }
 
-export const INITIAL_FORM_DATA: FormData = {
-  coin: "",
-  side: "long",
-  size: "",
-  sizePercentage: 0
-};
-
-export interface RawFill {
-  time: string;
-  coin: string;
-  dir: string;
-  px: string;
-  sz: string;
-  fee: string;
-  closedPnl: string;
-  hash: string;
-  tid: number;
-}
-
-export interface ProcessedPosition {
-  time: string;
-  coin: string;
-  direction: string;
-  price: string;
-  size: string;
-  tradeValue: string;
-  fee: string;
-  closedPnl: string;
-  closedPnlValue: number;
-  hash: string;
-  tid: number;
-}
-
-export type TradeHistoryState = ProcessedPosition[];
-
 export interface TradingFormState {
   formData: FormData;
   calculations: CalculationResult;
@@ -185,6 +54,13 @@ export interface TradingFormState {
   validation: ValidationResult;
   buttonText: string;
 }
+
+export const INITIAL_FORM_DATA: FormData = {
+  coin: "",
+  side: "long",
+  size: "",
+  sizePercentage: 0
+} as const;
 
 export type ValidationMessages = {
   readonly CONNECT_WALLET: "Connect Wallet";
@@ -195,100 +71,9 @@ export type ValidationMessages = {
   readonly PLACE_ORDER: "Place Order";
 };
 
-export interface ChartState {
-  data: CandleData | null;
-  loading: boolean;
-  error: string | null;
+export interface TradingServiceConfig {
+  privateKey: string;
+  userAddress: string;
+  testnet?: boolean;
+  vaultAddress?: string;
 }
-
-export interface CandleBar {
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-}
-
-export interface ChartDimensions {
-  width: number;
-  height: number;
-  viewBox: string;
-}
-
-export interface PriceRange {
-  max: number;
-  min: number;
-  range: number;
-}
-
-export interface PositionCalculation {
-  size: number;
-  isLong: boolean;
-  isShort: boolean;
-  pnl: number;
-  roe: number;
-  pnlFormatted: string;
-  roeFormatted: string;
-}
-
-// Portfolio types
-export interface PortfolioDataPoint {
-  timestamp: number;
-  value: string;
-}
-
-export interface PortfolioPeriod {
-  accountValueHistory: PortfolioDataPoint[];
-  pnlHistory: PortfolioDataPoint[];
-  vlm: string;
-}
-
-export interface PortfolioData extends Array<[string, PortfolioPeriod]> {}
-
-export interface PortfolioStats {
-  currentValue: number;
-  totalPnl: number;
-  totalPnlPercentage: number;
-  volume: number;
-  period: string;
-}
-
-export interface ChartDataPoint {
-  timestamp: number;
-  value: number;
-  pnl: number;
-}
-export interface PortfolioProps {
-  portfolio: PortfolioData;
-}
-
-export type TimeframePnlData = {
-  pnl: number;
-  percentage: number;
-  changeType: "positive" | "negative";
-};
-
-export type Stat = {
-  label: string;
-  value: string;
-  change: string | null;
-  changeType: "positive" | "negative" | null;
-};
-
-export type TimeframeKey = "day" | "week" | "month" | "allTime";
-
-export type TimeframeConfig = {
-  key: TimeframeKey;
-  label: string;
-};
-
-export type ProcessedTimeframeData = {
-  currentValue: number;
-  pnl: number;
-  pnlPercentage: number;
-  volume: number;
-  dataPoints: number;
-};
-
-export type TimeframeRow = TimeframeConfig & {
-  data: ProcessedTimeframeData;
-};

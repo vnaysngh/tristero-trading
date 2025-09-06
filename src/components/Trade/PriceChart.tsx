@@ -1,7 +1,7 @@
 "use client";
 
 import { usePriceHistory } from "@/hooks/useMarket";
-import { CandleBar, CandleData, PriceRange } from "@/types/trading";
+import { CandleBar, CandleData, PriceRange } from "@/types";
 import { useAppState } from "@/state/store";
 import { formatPrice } from "@/utils";
 import {
