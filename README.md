@@ -4,7 +4,7 @@ A sophisticated simulated crypto trading interface built with Next.js 15, featur
 
 ## 🚀 Live Demo
 
-[Add your deployed URL here]
+[Watch the demo video](https://www.awesomescreenshot.com/video/43934710?key=245039bbb64112be648a9d23d592767f)
 
 ## 📋 Table of Contents
 
@@ -28,6 +28,7 @@ Tristero Trading Interface is a full-featured simulated trading platform that al
 - Execute simulated trades with leverage
 - Track open positions with P&L calculations
 - Monitor trade history and account balances
+- Analyze portfolio performance with comprehensive charts and statistics
 - Experience a professional trading interface
 
 Built as a technical assessment showcasing modern React patterns, state management, and API integration skills.
@@ -41,6 +42,7 @@ Built as a technical assessment showcasing modern React patterns, state manageme
 - **Trading Interface**: Place market orders with configurable leverage (10x)
 - **Position Management**: View open positions with real-time P&L calculations
 - **Trade History**: Complete transaction history with detailed trade information
+- **Portfolio Analytics**: Comprehensive portfolio performance tracking with charts and statistics
 - **Account Balances**: Real-time USDC balance and position tracking
 
 ### User Experience
@@ -103,6 +105,7 @@ The application uses a hybrid state management approach:
 - Account data
 - Positions
 - Trade history
+- Portfolio data
 ```
 
 ### Component Architecture
@@ -114,7 +117,8 @@ src/
 │   ├── Header/           # Navigation and wallet
 │   ├── Trade/            # Trading interface
 │   ├── Positions/        # Position management
-│   └── TradeHistory/     # Transaction history
+│   ├── TradeHistory/     # Transaction history
+│   └── Portfolio/        # Portfolio analytics
 ├── hooks/                # Custom React hooks
 ├── lib/                  # API and service layer
 ├── state/                # Global state management
@@ -146,11 +150,11 @@ src/
 
 2. **Install dependencies**
 
-   ```bash
+```bash
    pnpm install
    # or
    npm install
-   ```
+```
 
 3. **Environment Setup**
    Create a `.env.local` file in the root directory:
@@ -163,19 +167,23 @@ src/
 
    ```bash
    pnpm dev
-   # or
-   npm run dev
    ```
 
+# or
+
+npm run dev
+
+````
+
 5. **Open in browser**
-   Navigate to `http://localhost:3000`
+Navigate to `http://localhost:3000`
 
 ### Production Build
 
 ```bash
 pnpm build
 pnpm start
-```
+````
 
 ## 🔌 API Integration
 
@@ -228,8 +236,8 @@ Body: {
 ### Performance Optimizations
 
 - **Real-time Updates**: Efficient price polling with change detection
-- **Component Memoization**: Prevents unnecessary re-renders
-- **Lazy Loading**: Route-based code splitting
+- **Component Memoization**: Using latest version of React Compiler so I do not have to manually memoize
+- **Lazy Loading**: Route-based code splitting (already implemented by Nextjs)
 - **Debounced Inputs**: Optimized search and form interactions
 
 ### UI/UX Decisions
@@ -237,7 +245,7 @@ Body: {
 - **Dark Theme**: Professional trading interface aesthetic
 - **Responsive Grid**: Adaptive layout for different screen sizes
 - **Loading States**: Clear feedback during async operations
-- **Error Boundaries**: Graceful error handling and recovery
+- **Error Boundaries**: React Query library includes error boundary integration for network operations. By setting up error boundaries with fallback components, you get automatic error handling without additional configuration.
 
 ## 📁 Project Structure
 
@@ -247,7 +255,8 @@ src/
 │   ├── layout.tsx         # Root layout with providers
 │   ├── page.tsx           # Home page
 │   ├── positions/         # Positions page
-│   └── trades/            # Trading page
+│   ├── trades/            # Trading page
+│   └── portfolio/         # Portfolio page
 ├── components/
 │   ├── common/            # Shared UI components
 │   │   ├── EmptyState.tsx
@@ -259,7 +268,8 @@ src/
 │   │   ├── PriceChart.tsx
 │   │   └── TradeForm/
 │   ├── Positions/         # Position management
-│   └── TradeHistory/      # Transaction history
+│   ├── TradeHistory/      # Transaction history
+│   └── Portfolio/         # Portfolio analytics
 ├── hooks/                 # Custom React hooks
 │   ├── useMarket.ts
 │   ├── useTheme.ts
@@ -278,23 +288,14 @@ src/
 
 ## 📸 Screenshots
 
-### Trading Interface
+![Trading Interface](https://www.awesomescreenshot.com/image/56325545?key=e06266cbd8e9ce16fccaef485ef3aec0)
 
-- Market selection with search and filtering
-- Real-time price chart with historical data
-- Trading form with leverage and position sizing
-- Account balance and position information
+![Market Select Dropdown](https://www.awesomescreenshot.com/image/56325547?key=47caf57b0c25bf2d51885bbb92043f4a)
 
-### Position Management
+![Trading Form with Input](https://www.awesomescreenshot.com/image/56325555?key=b549ad020899086e31248d3f7fd25704)
 
-- Open positions table with P&L calculations
-- Real-time price updates
-- Close position functionality
-- Responsive design for mobile
+![Open Positions](https://www.awesomescreenshot.com/image/56325557?key=d5cea66185390f55f33395d363bee630)
 
-### Trade History
+![Trade History](https://www.awesomescreenshot.com/image/56325549?key=cbca7109cca2b38f51b5394a524ca689)
 
-- Complete transaction history
-- Detailed trade information
-- Filtering and sorting capabilities
-- Professional table layout
+![Portfolio](https://www.awesomescreenshot.com/image/56325552?key=87dc4e9c02ac0d2441aac8c7554a28fb)
