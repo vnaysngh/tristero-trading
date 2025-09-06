@@ -3,9 +3,20 @@
 import { useState } from "react";
 import { usePositions, useClosePosition } from "@/hooks/useMarket";
 import PositionsTable from "./PositionsTable";
-import { tableHeaders } from "@/constants";
 import { useAppState } from "@/state/store";
 import { WarningIcon, BarChartIcon } from "./Icons";
+
+const headers = [
+  "Coin",
+  "Size",
+  "Position Value",
+  "Entry Price",
+  "Mark Price",
+  "PNL (ROE%)",
+  "Liq. Price",
+  "Margin",
+  "Close All"
+];
 
 const LoadingState = () => (
   <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -73,7 +84,7 @@ const NotificationBanner = ({
 
 const EmptyState = () => (
   <tr>
-    <td colSpan={tableHeaders.length} className="px-6 py-12 text-center">
+    <td colSpan={headers.length} className="px-6 py-12 text-center">
       <div className="text-gray-500 dark:text-gray-400">
         <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
           <BarChartIcon />
@@ -88,12 +99,12 @@ const EmptyState = () => (
 const TableHeader = () => (
   <thead className="bg-gray-50 dark:bg-gray-900">
     <tr>
-      {tableHeaders.map((header) => (
+      {headers.map((header) => (
         <th
-          key={header.key}
+          key={header}
           className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
         >
-          {header.label}
+          {header}
         </th>
       ))}
     </tr>

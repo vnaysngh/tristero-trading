@@ -131,6 +131,7 @@ export default function MarketTradingForm() {
   }
 
   function determineButtonText(validation: ValidationResult): string {
+    if (!walletAddress) return VALIDATION_MESSAGES.CONNECT_WALLET;
     if (isPlacing) return VALIDATION_MESSAGES.PLACING;
     if (!validation.hasEnoughMargin)
       return VALIDATION_MESSAGES.NOT_ENOUGH_MARGIN;

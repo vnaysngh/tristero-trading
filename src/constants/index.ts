@@ -44,6 +44,7 @@ export const CHART_DIMENSIONS: ChartDimensions = {
 };
 
 export const VALIDATION_MESSAGES: ValidationMessages = {
+  CONNECT_WALLET: "Connect Wallet",
   PLACING: "Placing Order...",
   NOT_ENOUGH_MARGIN: "Not Enough Margin",
   MIN_MARGIN: "Min Margin $10",
@@ -66,44 +67,4 @@ export const INTERVALS: Interval[] = [
   { value: "4h", label: "4 Hours" },
   { value: "1d", label: "1 Day" },
   { value: "1w", label: "1 Week" }
-];
-
-export const tableHeaders = [
-  {
-    label: "Coin",
-    key: "coin"
-  },
-
-  {
-    label: "Size",
-    key: "size"
-  },
-  {
-    label: "Position Value",
-    key: "positionValue"
-  },
-  {
-    label: "Entry Price",
-    key: "entryPrice"
-  },
-  {
-    label: "Mark Price",
-    key: "markPrice"
-  },
-  {
-    label: "PNL (ROE%)",
-    key: "pnl"
-  },
-  {
-    label: "Liq. Price",
-    key: "liqPrice"
-  },
-  {
-    label: "Margin",
-    key: "margin"
-  },
-  {
-    label: "Close All",
-    key: "closeAll"
-  }
 ];

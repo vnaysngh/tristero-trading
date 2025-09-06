@@ -125,13 +125,11 @@ export async function placeOrder(
   request: PlaceOrderRequest
 ): Promise<ApiResponse<any>> {
   try {
-    // Update leverage
     await tradingService.updateLeverage(
       `${request.coin}-PERP`,
       request.leverage
     );
 
-    // Place market order
     const orderRequest = {
       coin: request.coin,
       isBuy: request.side === "long",

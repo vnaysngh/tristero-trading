@@ -186,6 +186,7 @@ export interface TradingFormState {
 }
 
 export type ValidationMessages = {
+  readonly CONNECT_WALLET: "Connect Wallet";
   readonly PLACING: "Placing Order...";
   readonly NOT_ENOUGH_MARGIN: "Not Enough Margin";
   readonly MIN_MARGIN: "Min Margin $10";
