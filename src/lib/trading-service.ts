@@ -170,15 +170,27 @@ class TradingService {
   }
 
   async getPortfolio(userAddress: string): Promise<TradingResult> {
-    if (!this.sdk) {
-      throw new Error("Trading service not initialized");
-    }
-
     try {
-      const response = await this.sdk.info.portfolio(userAddress);
+      const response = await fetch("https://api.hyperliquid.xyz/info", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          type: "portfolio",
+          user: userAddress
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
       return {
         success: true,
-        data: response
+        data: data
       };
     } catch (error) {
       console.error("Error getting portfolio:", error);
