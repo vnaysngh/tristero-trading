@@ -19,7 +19,7 @@ interface AppState {
 export const useAppState = create<AppState>()(
   persist(
     (set, get) => ({
-      isOnline: typeof navigator !== "undefined" ? navigator.onLine : true,
+      isOnline: true,
       theme: DEFAULT_THEME,
       ticker: "ETH",
       prices: {},

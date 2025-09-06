@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { WarningIcon } from "./Icons";
 import { useAppState } from "@/state/store";
 
 export function NetworkStatus() {
+  const [isClient, setIsClient] = useState(false);
+
   const isOnline = useAppState((s) => s.isOnline);
   const setIsOnline = useAppState((s) => s.setOnline);
 
@@ -12,6 +14,12 @@ export function NetworkStatus() {
   const handleOffline = () => setIsOnline(false);
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
@@ -19,7 +27,7 @@ export function NetworkStatus() {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
-  }, []);
+  }, [isClient]);
 
   if (isOnline) {
     return null;
