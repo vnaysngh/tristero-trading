@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { Theme } from "@/types/trading";
 import { NAV_ITEMS } from "@/constants";
 import { SunIcon, MoonIcon, WalletIcon, LoadingSpinner } from "./Icons";
+import { NetworkStatus } from "./NetworkStatus";
 
 const ThemeToggle = ({
   theme,
@@ -202,14 +203,17 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-      <HeaderContent
-        theme={theme}
-        onThemeToggle={toggleTheme}
-        walletProps={walletProps}
-        error={error}
-        pathname={pathname}
-      />
-    </header>
+    <>
+      <NetworkStatus />
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <HeaderContent
+          theme={theme}
+          onThemeToggle={toggleTheme}
+          walletProps={walletProps}
+          error={error}
+          pathname={pathname}
+        />
+      </header>
+    </>
   );
 }

@@ -28,6 +28,7 @@ import {
 
 export default function MarketTradingForm() {
   const ticker = useAppState((s) => s.ticker);
+  const isOnline = useAppState((s) => s.isOnline);
   const walletAddress = useAppState((s) => s.walletAddress);
   const currentPrice = useAppState((s) => s.prices[ticker]);
 
@@ -120,7 +121,12 @@ export default function MarketTradingForm() {
       hasEnoughMargin,
       hasMinimumMargin,
       isValidSize,
-      canSubmit: hasEnoughMargin && hasMinimumMargin && isValidSize && hasSize
+      canSubmit:
+        hasEnoughMargin &&
+        hasMinimumMargin &&
+        isValidSize &&
+        hasSize &&
+        isOnline
     };
   }
 
@@ -198,9 +204,12 @@ export default function MarketTradingForm() {
 
     const orderRequest = createOrderRequest();
 
-    placeOrder(orderRequest, {
-      onSuccess: clearOrderSize
-    });
+    try {
+      await placeOrder(orderRequest);
+      clearOrderSize();
+    } catch (error) {
+      throw error;
+    }
   }
 
   function renderErrorMessage() {

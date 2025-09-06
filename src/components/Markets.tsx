@@ -5,6 +5,7 @@ import PriceChart from "@/components/PriceChart";
 import MarketTradingForm from "@/components/TradingForm";
 import MarketSelect from "@/components/MarketSelect";
 import { MarketInfo } from "./MarketInfo";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 export const dynamic = "force-dynamic";
 
@@ -17,17 +18,23 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-              <MarketSelect
-                selectedInterval={selectedInterval}
-                setSelectedInterval={setSelectedInterval}
-              />
-              <PriceChart selectedInterval={selectedInterval} />
+              <ErrorBoundary>
+                <MarketSelect
+                  selectedInterval={selectedInterval}
+                  setSelectedInterval={setSelectedInterval}
+                />
+              </ErrorBoundary>
+              <ErrorBoundary>
+                <PriceChart selectedInterval={selectedInterval} />
+              </ErrorBoundary>
             </div>
             <MarketInfo />
           </div>
 
           <div className="space-y-6">
-            <MarketTradingForm />
+            <ErrorBoundary>
+              <MarketTradingForm />
+            </ErrorBoundary>
           </div>
         </div>
       </main>

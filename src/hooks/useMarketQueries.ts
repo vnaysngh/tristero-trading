@@ -64,7 +64,7 @@ export function usePositions(walletAddress: string) {
     enabled: !!walletAddress && walletAddress.length > 0,
     staleTime: Infinity,
     gcTime: 2 * 60 * 1000,
-    retry: 3
+    retry: false
   });
 }
 
@@ -110,12 +110,11 @@ export function useAccountData(userAddress: string) {
     enabled: !!userAddress && userAddress.length > 0,
     staleTime: 10 * 1000,
     gcTime: 2 * 60 * 1000,
-    retry: 3,
     refetchInterval: 30 * 1000
   });
 }
 
-export function useClosedPositions(walletAddress: string) {
+export function useTradeHistory(walletAddress: string) {
   return useQuery({
     queryKey: ["closedPositions", walletAddress],
     queryFn: async () => {
@@ -130,7 +129,7 @@ export function useClosedPositions(walletAddress: string) {
     enabled: !!walletAddress && walletAddress.length > 0,
     staleTime: Infinity,
     gcTime: 10 * 60 * 1000,
-    retry: 3
+    retry: false
   });
 }
 

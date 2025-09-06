@@ -1,6 +1,6 @@
 "use client";
 
-import { useClosedPositions } from "@/hooks/useMarket";
+import { useTradeHistory } from "@/hooks/useMarket";
 import { formatPrice, formatTradeTime } from "@/utils";
 import { ProcessedPosition, RawFill } from "@/types/trading";
 import { TradeHistoryTable } from "./TradeHistoryTable";
@@ -10,7 +10,7 @@ import { BarChartIcon } from "./Icons";
 export function TradeHistory() {
   const walletAddress = useAppState((s) => s.walletAddress);
   const { closedPositions, loading, error, refetch } =
-    useClosedPositions(walletAddress);
+    useTradeHistory(walletAddress);
 
   function processRawFill(fill: RawFill): ProcessedPosition {
     const price = parseFloat(fill.px);

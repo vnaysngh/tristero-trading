@@ -7,7 +7,7 @@ import {
   useClosePosition as useClosePositionMutation,
   useAccountData as useAccountDataQuery,
   usePlaceOrder as usePlaceOrderMutation,
-  useClosedPositions as useClosedPositionsQuery,
+  useTradeHistory as useTradeHistoryQuery,
   usePriceHistory as usePriceHistoryQuery
 } from "./useMarketQueries";
 
@@ -68,9 +68,9 @@ export function useAccountData(userAddress: string) {
   };
 }
 
-export function useClosedPositions(walletAddress: string) {
+export function useTradeHistory(walletAddress: string) {
   const { data, isLoading, error, refetch } =
-    useClosedPositionsQuery(walletAddress);
+    useTradeHistoryQuery(walletAddress);
 
   return {
     closedPositions: data || [],

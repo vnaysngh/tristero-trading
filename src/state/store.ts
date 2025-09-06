@@ -4,10 +4,12 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { DEFAULT_THEME } from "@/constants";
 
 interface AppState {
+  isOnline: boolean;
   theme: Theme;
   ticker: string;
   prices: PriceData;
   walletAddress: string;
+  setOnline: (value: boolean) => void;
   setTheme: (theme: Theme) => void;
   setTicker: (ticker: string) => void;
   setPrices: (batch: PriceData) => void;
@@ -17,10 +19,12 @@ interface AppState {
 export const useAppState = create<AppState>()(
   persist(
     (set, get) => ({
+      isOnline: typeof navigator !== "undefined" ? navigator.onLine : true,
       theme: DEFAULT_THEME,
       ticker: "ETH",
       prices: {},
       walletAddress: "",
+      setOnline: (value: boolean) => set({ isOnline: value }),
       setTheme: (theme: Theme) => set({ theme: theme }),
       setTicker: (ticker: string) => set({ ticker: ticker }),
       setPrices: (batch: PriceData) => {
