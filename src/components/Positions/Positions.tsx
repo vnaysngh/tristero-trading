@@ -117,7 +117,9 @@ export default function Positions() {
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {!hasPositions ? (
               <EmptyState
-                title="No open positions yet"
+                title={
+                  !walletAddress ? "Connect Wallet" : "No open positions yet"
+                }
                 description="Start trading to see your positions here"
                 colSpan={headers.length}
               />

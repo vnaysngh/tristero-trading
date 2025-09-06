@@ -66,7 +66,7 @@ export function TradeHistory() {
       <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
         {processedPositions.length === 0 ? (
           <EmptyState
-            title="No trade history yet"
+            title={!walletAddress ? "Connect Wallet" : "No trade history yet"}
             description="Trade history will appear here after you make trades"
             colSpan={headers.length}
           />
