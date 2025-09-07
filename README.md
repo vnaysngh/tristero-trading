@@ -178,7 +178,7 @@ const nextConfig = {
 
 ### Atomic Design Principles
 
-Organize components using atomic design methodology for standardized UI patterns and clear component hierarchy
+Organize components using atomic design methodology for standardized UI patterns and clear component hierarchy. Most components are under 100 lines, some range between 100-150 lines, and the largest component (TradingForm) reaches 305 lines.
 
 **Structure**:
 
