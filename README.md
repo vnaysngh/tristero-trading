@@ -286,16 +286,17 @@ src/
     └── index.ts
 ```
 
-## 📸 Screenshots
+## 📸 Screenshots & Demo
 
-![Trading Interface](https://www.awesomescreenshot.com/image/56325545?key=e06266cbd8e9ce16fccaef485ef3aec0)
+**View all screenshots and demo video:** [Google Drive Folder](https://drive.google.com/drive/folders/1ZUCu6YNzHiqLT-ZxF8rtUjga32R_DCvT?usp=sharing)
 
-![Market Select Dropdown](https://www.awesomescreenshot.com/image/56325547?key=47caf57b0c25bf2d51885bbb92043f4a)
+The folder contains:
 
-![Trading Form with Input](https://www.awesomescreenshot.com/image/56325555?key=b549ad020899086e31248d3f7fd25704)
-
-![Open Positions](https://www.awesomescreenshot.com/image/56325557?key=d5cea66185390f55f33395d363bee630)
-
-![Trade History](https://www.awesomescreenshot.com/image/56325549?key=cbca7109cca2b38f51b5394a524ca689)
-
-![Portfolio](https://www.awesomescreenshot.com/image/56325552?key=87dc4e9c02ac0d2441aac8c7554a28fb)
+- **Demo Video**: `tristero-trading-interface_ti67VVgA.mp4` - Complete application walkthrough
+- **Screenshots**:
+  - `market-landing-page.png` - Trading Interface
+  - `markets-dropdown.png` - Market Select Dropdown
+  - `create-new-position.png` - Trading Form with Input
+  - `open-positions.png` - Open Positions
+  - `trade-history.png` - Trade History
+  - `portfolio.png` - Portfolio Analytics
