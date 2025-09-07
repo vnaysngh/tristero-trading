@@ -14,15 +14,15 @@ Build a simulated trading interface that allows users to paper trade crypto asse
 2. **Asset selection** - Users can browse and select different crypto assets
 3. **Trading simulation** - Create and manage simulated positions
 4. **Position tracking** - View active positions with profit/loss calculations
-5. **Transaction history** - Record of past trading activity (todo)
+5. **Transaction history** - Record of past trading activity
 
 ### Technical Requirements
 
 - Use **Hyperliquid API** (`https://api.hyperliquid.xyz/info`) for market data
-- Implement **persistent storage** for user positions (todo)
+- Implement **persistent storage** for user positions
 - Handle **real-time price updates**
-- Create **responsive design** for different screen sizes (todo)
-- Include proper **loading states** and **error handling**(todo)
+- Create **responsive design** for different screen sizes
+- Include proper **loading states** and **error handling**
 
 ## API Information
 
