@@ -10,6 +10,7 @@ Built as a technical assessment showcasing modern React patterns, state manageme
 [Watch the demo video](https://drive.google.com/file/d/1PtkbAu5H7VlAya4f9zTaGUF9DpyJkCnk/view?usp=sharing)
 
 > **Note**: Wallet connection is only supported on desktop/web browsers. Mobile devices are not supported for wallet functionality.
+> **Important**: To place orders, you must add your private key to the `.env` file. Without this, you can only view data but cannot execute trades.
 
 ## ✨ Key Features
 
