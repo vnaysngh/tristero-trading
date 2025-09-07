@@ -7,7 +7,7 @@ Built as a technical assessment showcasing modern React patterns, state manageme
 
 ## 🚀 Live Demo
 
-[Watch the demo video]([https://www.awesomescreenshot.com/video/43934710?key=245039bbb64112be648a9d23d592767f](https://drive.google.com/file/d/1PtkbAu5H7VlAya4f9zTaGUF9DpyJkCnk/view?usp=sharing))
+[Watch the demo video](https://drive.google.com/file/d/1PtkbAu5H7VlAya4f9zTaGUF9DpyJkCnk/view?usp=sharing)
 
 ## ✨ Key Features
 
