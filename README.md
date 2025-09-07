@@ -1,6 +1,6 @@
 # Tristero Trading Interface
 
-Tristero Trading Interface is a simulated crypto trading platform where users can trade 100+ assets with leverage, 
+Tristero Trading Interface is a simulated crypto trading platform where users can trade 100+ assets with leverage,
 track positions and history, view real-time data and charts, and analyze portfolio performance in a professional interface.
 
 Built as a technical assessment showcasing modern React patterns, state management, and API integration skills.
@@ -8,6 +8,8 @@ Built as a technical assessment showcasing modern React patterns, state manageme
 ## 🚀 Live Demo
 
 [Watch the demo video](https://drive.google.com/file/d/1PtkbAu5H7VlAya4f9zTaGUF9DpyJkCnk/view?usp=sharing)
+
+> **Note**: Wallet connection is only supported on desktop/web browsers. Mobile devices are not supported for wallet functionality.
 
 ## ✨ Key Features
 
@@ -29,7 +31,7 @@ Built as a technical assessment showcasing modern React patterns, state manageme
 - **React 19** - Latest React with concurrent features and compiler
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first styling
-- **Zustand** -  Zustand for global state with persistence
+- **Zustand** - Zustand for global state with persistence
 - **TanStack Query** -Efficient API management
 
 ### API & Data
@@ -158,6 +160,7 @@ Body: {
   }
 }
 ```
+
 ### State Management Strategy
 
 - **Zustand over Redux**: Chosen for simplicity and TypeScript integration with peristence.
