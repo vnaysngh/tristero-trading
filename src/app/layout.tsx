@@ -11,7 +11,7 @@ const jakartaSans = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: "Tristero Trading Interface",
-  description: "Simulated crypto trading interface with real-time price data"
+  description: "Crypto trading interface with real-time price data"
 };
 
 export default function RootLayout({

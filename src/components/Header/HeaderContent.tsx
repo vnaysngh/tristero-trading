@@ -36,7 +36,7 @@ const HeaderContent = ({
           Tristero Trading Interface
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Simulated crypto trading with real-time Hyperliquid data
+          Crypto trading with real-time Hyperliquid data
         </p>
       </div>
 
