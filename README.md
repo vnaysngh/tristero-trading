@@ -9,8 +9,10 @@ Built as a technical assessment showcasing modern React patterns, state manageme
 [Watch the demo video](https://drive.google.com/file/d/1PtkbAu5H7VlAya4f9zTaGUF9DpyJkCnk/view?usp=sharing)
 
 > **Note**: Wallet connection is only supported on desktop/web browsers. Mobile devices are not supported for wallet functionality.
+
 > **Important**: To place orders, you must add your private key to the `.env` file. Without this, you can only view data but cannot execute trades.
-> **⚠️ Real Trading**: This application connects to Hyperliquid's and works with real funds, not paper trading. Any order you place here can also be tracked on [Hyperliquid](app.hyperliquid.xyz)
+
+> **⚠️ Real Trading**: This application connects to Hyperliquid's mainnet and works with real funds, not paper trading. Any order you place here can also be tracked on [Hyperliquid](https://app.hyperliquid.xyz)
 
 ## ✨ Key Features
 
@@ -33,7 +35,7 @@ Built as a technical assessment showcasing modern React patterns, state manageme
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first styling
 - **Zustand** - Zustand for global state with persistence
-- **TanStack Query** -Efficient API management
+- **TanStack Query** - Efficient API management
 
 ### API & Data
 
@@ -60,13 +62,14 @@ Built as a technical assessment showcasing modern React patterns, state manageme
 
 2. **Install dependencies**
 
-```bash
+   ```bash
    pnpm install
    # or
    npm install
-```
+   ```
 
 3. **Environment Setup**
+
    Create a `.env.local` file in the root directory:
 
    ```env
@@ -77,23 +80,20 @@ Built as a technical assessment showcasing modern React patterns, state manageme
 
    ```bash
    pnpm dev
+   # or
+   npm run dev
    ```
 
-# or
-
-npm run dev
-
-````
-
 5. **Open in browser**
-Navigate to `http://localhost:3000`
+
+   Navigate to `http://localhost:3000`
 
 ### Production Build
 
 ```bash
 pnpm build
 pnpm start
-````
+```
 
 ## 🔌 API Integration
 
@@ -122,7 +122,7 @@ Body: {
 }
 ```
 
-# 🏗️ Architecture & Design Decisions
+## 🏗️ Architecture & Design Decisions
 
 This document elaborates on the architectural choices and design decisions made in the Tristero Trading application, explaining the reasoning behind each technical decision.
 
@@ -195,11 +195,11 @@ components/
 
 ### Service Layer Architecture
 
-Create a service layer (`trading-service.ts`) that wraps the Hyperliquid SDK to hide SDK complexity from components. Also for future proofing, easy to switch SDKs or add features
+Create a service layer (`trading-service.ts`) that wraps the Hyperliquid SDK to hide SDK complexity from components. Also for future proofing, easy to switch SDKs or add features.
 
 ### API Wrapper Pattern
 
-Create API wrappers (`api.ts`) that handle common patterns to standardized error handling and response format
+Create API wrappers (`api.ts`) that handle common patterns to standardized error handling and response format.
 
 **Pattern**:
 
@@ -228,7 +228,7 @@ Split types into domain-specific files with centralized exports.
 
 Split utilities into domain-specific files with centralized exports.
 
-### Error Handling Strategy
+## 🛡️ Error Handling Strategy
 
 Implement multiple layers of error handling.
 
@@ -248,6 +248,8 @@ Implement multiple layers of error handling.
   </ErrorBoundary>
 </QueryClient>
 ```
+
+## 🎨 UI/UX Design Philosophy
 
 ### Dark Mode Support
 
