@@ -1,37 +1,13 @@
 # Tristero Trading Interface
 
-A sophisticated simulated crypto trading interface built with Next.js 15, featuring real-time price data from Hyperliquid API, position management, and a modern dark-themed UI.
+Tristero Trading Interface is a simulated crypto trading platform where users can trade 100+ assets with leverage, 
+track positions and history, view real-time data and charts, and analyze portfolio performance in a professional interface.
+
+Built as a technical assessment showcasing modern React patterns, state management, and API integration skills.
 
 ## 🚀 Live Demo
 
-[Watch the demo video](https://www.awesomescreenshot.com/video/43934710?key=245039bbb64112be648a9d23d592767f)
-
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Key Features](#key-features)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Setup Instructions](#setup-instructions)
-- [API Integration](#api-integration)
-- [Design Decisions](#design-decisions)
-- [Project Structure](#project-structure)
-- [Screenshots](#screenshots)
-- [Future Enhancements](#future-enhancements)
-
-## 🎯 Overview
-
-Tristero Trading Interface is a full-featured simulated trading platform that allows users to:
-
-- Browse and select from 100+ crypto assets
-- View real-time price data and historical charts
-- Execute simulated trades with leverage
-- Track open positions with P&L calculations
-- Monitor trade history and account balances
-- Analyze portfolio performance with comprehensive charts and statistics
-- Experience a professional trading interface
-
-Built as a technical assessment showcasing modern React patterns, state management, and API integration skills.
+[Watch the demo video]([https://www.awesomescreenshot.com/video/43934710?key=245039bbb64112be648a9d23d592767f](https://drive.google.com/file/d/1PtkbAu5H7VlAya4f9zTaGUF9DpyJkCnk/view?usp=sharing))
 
 ## ✨ Key Features
 
@@ -45,45 +21,22 @@ Built as a technical assessment showcasing modern React patterns, state manageme
 - **Portfolio Analytics**: Comprehensive portfolio performance tracking with charts and statistics
 - **Account Balances**: Real-time USDC balance and position tracking
 
-### User Experience
-
-- **Dark Theme**: Professional dark mode interface optimized for trading
-- **Responsive Design**: Works seamlessly across desktop and mobile devices
-- **Real-time Updates**: Live price polling and position updates
-- **Error Handling**: Comprehensive error states and user feedback
-- **Loading States**: Smooth loading indicators throughout the app
-- **Network Status**: Online/offline detection and handling
-
-### Technical Features
-
-- **TypeScript**: Full type safety throughout the application
-- **State Management**: Zustand for global state with persistence
-- **Data Fetching**: TanStack Query for efficient API management
-- **Component Architecture**: Modular, reusable component design
-- **Performance**: Optimized rendering and data updates
-
 ## 🛠 Tech Stack
 
 ### Frontend
 
 - **Next.js 15** - React framework with App Router
-- **React 19** - Latest React with concurrent features
+- **React 19** - Latest React with concurrent features and compiler
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first styling
-- **Zustand** - Lightweight state management
-- **TanStack Query** - Server state management
+- **Zustand** -  Zustand for global state with persistence
+- **TanStack Query** -Efficient API management
 
 ### API & Data
 
 - **Hyperliquid API** - Real-time market data and trading
+- **Hyperliquid SDK** - To create and close orders
 - **Ethers.js** - Ethereum wallet integration
-- **Local Storage** - Persistent state management
-
-### Development
-
-- **Turbopack** - Fast bundling and development
-- **ESLint** - Code linting and formatting
-- **PostCSS** - CSS processing
 
 ## 🏗 Architecture
 
@@ -99,7 +52,7 @@ The application uses a hybrid state management approach:
 - Wallet connection
 - Network status
 
-// Server State (TanStack Query)
+// API State (React Query)
 - Market data
 - Price history
 - Account data
@@ -124,12 +77,6 @@ src/
 ├── state/                # Global state management
 └── types/                # TypeScript definitions
 ```
-
-### Data Flow
-
-1. **Price Updates**: Real-time polling → Global state → UI updates
-2. **Trading**: Form submission → API call → Position update → UI refresh
-3. **Navigation**: Route changes → Component mounting → Data fetching
 
 ## 🚀 Setup Instructions
 
@@ -211,27 +158,10 @@ Body: {
   }
 }
 ```
-
-### Error Handling
-
-- Network failure recovery
-- API rate limiting
-- Invalid data validation
-- User-friendly error messages
-
-## 🎨 Design Decisions
-
-### Component Reusability
-
-- **Common Components**: Created reusable `LoadingState`, `EmptyState`, and `TableHeader` components
-- **Props-based Customization**: Flexible components that adapt to different contexts
-- **DRY Principle**: Eliminated duplicate code across Positions and TradeHistory
-
 ### State Management Strategy
 
-- **Zustand over Redux**: Chosen for simplicity and TypeScript integration
-- **TanStack Query**: Handles server state with caching and background updates
-- **Local Storage**: Persists user preferences and selected ticker
+- **Zustand over Redux**: Chosen for simplicity and TypeScript integration with peristence.
+- **TanStack Query**: Handles requests with caching and background updates
 
 ### Performance Optimizations
 
